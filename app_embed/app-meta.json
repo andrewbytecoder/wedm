@@ -1,0 +1,22 @@
+{
+  "name": "etcd-manager",
+  "version": "2.0.0-wails",
+  "title": "ETCD Manager",
+  "homepage": "https://etcdmanager.io",
+  "bugs": {
+    "url": "https://github.com/icellmobilsoft/etcdmanager/issues/new?assignees=&labels=&template=bug_report.md&title=%5BBUG%5D"
+  },
+  "collaborators": [
+    "Tamas Geschitz <getamas@gmail.com>",
+    "Jozsef Szalai",
+    "David Onofer",
+    "Gabor Nagy"
+  ],
+  "contributors": [
+    "Tamas Geschitz <getamas@gmail.com>",
+    "Jozsef Szalai",
+    "David Onofer",
+    "Daniel Rudolf",
+    "Gabor Nagy"
+  ]
+}

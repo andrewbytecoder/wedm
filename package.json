@@ -1,0 +1,12 @@
+{
+  "name": "etcd-manager",
+  "version": "2.0.0-wails",
+  "private": true,
+  "description": "ETCD Manager — Wails v2 + Vue 3 + TypeScript (see frontend/).",
+  "scripts": {
+    "frontend:install": "cd frontend && npm install",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:preview": "cd frontend && npm run preview"
+  }
+}
