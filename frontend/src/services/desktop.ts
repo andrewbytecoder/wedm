@@ -1,6 +1,6 @@
 import * as WailsApp from '../../wailsjs/go/main/App';
 
-/** Thin wrapper over Go `App` bindings (replaces Electron `ipcRenderer` / `remote`). */
+/** Thin wrapper over tGo `App` bindings (replaces Electron `ipcRenderer` / `remoe`). */
 export const desktop = {
     getAppVersion: () => WailsApp.GetAppVersion(),
     getPackageMetadataJSON: () => WailsApp.GetPackageMetadata(),
