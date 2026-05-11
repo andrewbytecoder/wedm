@@ -7,7 +7,7 @@ import { listWatchers } from '@/services/watcherStorage';
 import { rehydrateActivatedWatchers } from '@/services/watcherRuntime';
 import { useAppStore } from '@/stores/app';
 import { useSettingsStore } from '@/stores/settings';
-import { EventsOn } from '../wailsjs/runtime/runtime';
+import { EventsOn } from '../wailsjs/runtime';
 
 const { t } = useI18n();
 const store = useAppStore();

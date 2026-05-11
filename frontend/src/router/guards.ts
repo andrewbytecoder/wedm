@@ -75,8 +75,8 @@ export function isConfiguredGuard(
         if (!alreadyOnSettings) {
             const lang = (root?.config as { language?: string } | undefined)?.language;
             const text =
-                lang === 'hu'
-                    ? messages.hu.guard.incompleteConfig
+                lang === 'zh'
+                    ? messages.zh.guard.incompleteConfig
                     : messages.en.guard.incompleteConfig;
             store.showMessage(text, 'warning');
         }

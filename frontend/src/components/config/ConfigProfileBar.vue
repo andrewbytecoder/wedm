@@ -65,7 +65,7 @@ function onSaveAs(name: string) {
                     v-model="settings.config.language"
                     :items="[
                         { title: 'English', value: 'en' },
-                        { title: 'Hungarian', value: 'hu' },
+                        { title: 'Chinese', value: 'zh' },
                     ]"
                     item-title="title"
                     item-value="value"

@@ -20,17 +20,22 @@ const tab = ref(0);
 const helpOpen = ref(false);
 
 function persist() {
-    if (!String(settings.etcd.hosts || '').trim() || !settings.etcd.port) {
-        app.showMessage(t('settings.messages.error'), 'warning');
-        return;
-    }
+    // 保存所有配置（语言、观察者设置等），不强制要求 ETCD 配置
     settings.persistToLocalStorage();
-    const lang = settings.config.language === 'hu' ? 'hu' : 'en';
+
+    // 切换语言
+    const lang = settings.config.language === 'zh' ? 'zh' : 'en';
     i18n.global.locale.value = lang;
     document.querySelector('html')?.setAttribute('lang', lang);
+
     app.showMessage(t('settings.messages.success'), 'success');
-    void settings.refreshMenuCapabilitiesFromEtcd();
-    if (settings.isConfigured) {
+
+    // 只有配置了 ETCD 的 host 和 port 才尝试连接和刷新能力
+    const hasHost = String(settings.etcd.hosts || '').trim();
+    const hasPort = settings.etcd.port;
+    //  只有在配置了etcd的host和port的情况下，才会尝试连接和刷新
+    if (hasHost && hasPort) {
+        void settings.refreshMenuCapabilitiesFromEtcd();
         void (async () => {
             await stopAllUserWatchBackends();
             await rehydrateActivatedWatchers(settings.watchers.autoload, {
@@ -62,7 +67,7 @@ onMounted(() => {
             <v-tab :value="2">{{ t('settings.watchers.title') }}</v-tab>
             <v-tab :value="3">{{ t('settings.misc.title') }}</v-tab>
         </v-tabs>
-
+<!--        tab  配置窗口 -->
         <v-tabs-window v-model="tab">
             <v-tabs-window-item :value="0">
                 <ConfigProfileBar />

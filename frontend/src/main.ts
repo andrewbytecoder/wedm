@@ -9,6 +9,7 @@ import { useSettingsStore } from './stores/settings';
 const app = createApp(App);
 const pinia = createPinia();
 
+//  使用pinia进行存储
 app.use(pinia);
 app.use(router);
 app.use(vuetify);
@@ -16,7 +17,7 @@ app.use(i18n);
 
 const settings = useSettingsStore();
 settings.hydrateFromLocalStorage();
-i18n.global.locale.value = settings.config.language === 'hu' ? 'hu' : 'en';
+i18n.global.locale.value = settings.config.language === 'zh' ? 'zh' : 'en';
 document.querySelector('html')?.setAttribute('lang', settings.config.language);
 
 app.mount('#app');

@@ -13,13 +13,17 @@ const emit = defineEmits<{
     'update:modelValue': [boolean];
 }>();
 
+//  国际化，将传入的文本，根据当前语言进行翻译
 const { t } = useI18n();
 const html = ref('');
 const loading = ref(false);
 const hideNext = ref(false);
 
 watch(hideNext, (v) => {
+    //  一旦在界面上勾选，则保存到本地，下次不再显示
     if (v && props.version) {
+        // 浏览器内置全局API 不需要引用直接可以在任何地方使用
+        // 存储到自己的缓存里面了
         localStorage.setItem(`news${props.version}`, '1');
     }
 });
@@ -54,7 +58,7 @@ function close() {
 <template>
     <v-dialog
         :model-value="modelValue"
-        max-width="720"
+        max-width="700"
         scrollable
         persistent
         @update:model-value="emit('update:modelValue', $event)"
@@ -67,6 +71,7 @@ function close() {
                 <v-progress-linear v-if="loading" indeterminate />
                 <div v-else class="markdown-body text-body-2" v-html="html" />
             </v-card-text>
+<!--             一旦勾选按钮后期将不会再弹窗 -->
             <v-checkbox
                 v-model="hideNext"
                 class="mx-4 mb-2"
