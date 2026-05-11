@@ -12,6 +12,7 @@ export const useAppStore = defineStore('app', {
         message: {
             text: '',
             color: 'error' as string,
+            //  显示4 秒
             timeout: 4000,
             show: false,
         },
@@ -22,6 +23,7 @@ export const useAppStore = defineStore('app', {
             const raw = await desktop.getPackageMetadataJSON();
             this.packageMeta = JSON.parse(raw) as Record<string, unknown>;
         },
+        //  这里更新值，在 App.vue中的v-snackbar 显示提示信息
         showMessage(text: string, color = 'error') {
             this.message = { ...this.message, text, color, show: true };
         },

@@ -60,7 +60,7 @@ onMounted(() => {
 <template>
     <v-container fluid class="pa-4">
         <ConfigHelpPanel v-model="helpOpen" />
-
+<!--         tabs 显示 -->
         <v-tabs v-model="tab" bg-color="surface-variant" class="mb-4" rounded>
             <v-tab :value="0">{{ t('settings.profile.title') }}</v-tab>
             <v-tab :value="1">{{ t('settings.etcd.title') }}</v-tab>

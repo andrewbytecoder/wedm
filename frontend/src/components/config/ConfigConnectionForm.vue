@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 import { useSettingsStore } from '@/stores/settings';
 import { useAppStore } from '@/stores/app';
 import { desktop } from '@/services/desktop';
-import { etcdPing } from '@/services/etcdBridge';
+import * as WailsApp from '../../../wailsjs/go/main/App';
 
 const { t } = useI18n();
 const settings = useSettingsStore();
@@ -23,12 +24,91 @@ function clearSsl(field: 'certificate' | 'certKey' | 'certChain') {
     settings.clearSslField(field);
 }
 
+interface EtcdConfig {
+    hosts: string;
+    port: number;
+    dialTimeout: number;
+    retry: boolean;
+    version: number;
+    ssl: {
+        enabled: boolean;
+        certificate: string;
+        certKey: string;
+        certChain: string;
+    }
+    auth: {
+        username: string;
+        password: string;
+    }
+}
+
+
+const etcdConfig = ref<EtcdConfig>({
+    hosts: settings.etcd.hosts,
+    port: settings.etcd.port,
+    dialTimeout: settings.etcd.dialTimeout,
+    retry: settings.etcd.retry,
+    version: settings.etcd.version,
+    ssl: {
+        enabled: settings.etcd.ssl.enabled,
+        certificate: settings.etcd.ssl.certificate,
+        certKey: settings.etcd.ssl.certKey,
+        certChain: settings.etcd.ssl.certChain,
+    },
+    auth: {
+        username: settings.etcdAuth.username,
+        password: settings.etcdAuth.password,
+    },
+});
+
+// 监听 etcdConfig 的变化，同步到 settings store
+watch(
+    etcdConfig,
+    (newConfig) => {
+        // 同步 ETCD 配置
+        settings.etcd.hosts = newConfig.hosts;
+        settings.etcd.port = newConfig.port;
+        settings.etcd.dialTimeout = newConfig.dialTimeout;
+        settings.etcd.retry = newConfig.retry;
+        settings.etcd.version = newConfig.version;
+
+        // 同步 SSL 配置
+        settings.etcd.ssl.enabled = newConfig.ssl.enabled;
+        settings.etcd.ssl.certificate = newConfig.ssl.certificate;
+        settings.etcd.ssl.certKey = newConfig.ssl.certKey;
+        settings.etcd.ssl.certChain = newConfig.ssl.certChain;
+
+        // 同步认证配置
+        settings.etcdAuth.username = newConfig.auth.username;
+        settings.etcdAuth.password = newConfig.auth.password;
+    },
+    { deep: true }
+);
+
+
 async function testConnection() {
     try {
-        const st = await etcdPing();
+        // 构建当前界面的配置（未保存的最新数据）
+        const currentConfig = JSON.stringify({
+            etcd: {
+                hosts: etcdConfig.value.hosts,
+                port: etcdConfig.value.port,
+                dialTimeout: etcdConfig.value.dialTimeout,
+                retry: etcdConfig.value.retry,
+                version: etcdConfig.value.version,
+                ssl: etcdConfig.value.ssl,
+            },
+            etcdAuth: {
+                username: etcdConfig.value.auth.username,
+                password: etcdConfig.value.auth.password,
+            },
+        });
+
+        const raw = await WailsApp.EtcdPing(currentConfig);
+        const st = JSON.parse(raw) as Record<string, unknown>;
         const ver = Number.parseFloat(String(st.version ?? '0'));
         if (!Number.isNaN(ver)) {
-            settings.etcd.version = ver;
+            etcdConfig.value.version = ver;
         }
         app.showMessage(t('settings.messages.connectSuccess'), 'success');
     } catch (e) {
@@ -67,27 +147,27 @@ async function importConfig() {
         <v-card-title>{{ t('settings.etcd.title') }}</v-card-title>
         <v-card-text>
             <v-text-field
-                v-model="settings.etcd.hosts"
+                v-model="etcdConfig.hosts"
                 :label="t('settings.etcd.fields.endpoint.label')"
                 density="comfortable"
                 class="mb-2"
             />
             <v-text-field
-                v-model.number="settings.etcd.port"
+                v-model.number="etcdConfig.port"
                 type="number"
                 :label="t('settings.etcd.fields.port.label')"
                 density="comfortable"
                 class="mb-2"
             />
             <v-text-field
-                v-model.number="settings.etcd.dialTimeout"
+                v-model.number="etcdConfig.dialTimeout"
                 type="number"
                 :label="t('settings.etcd.fields.timeout.label')"
                 density="comfortable"
                 class="mb-2"
             />
             <v-switch
-                v-model="settings.etcd.retry"
+                v-model="etcdConfig.retry"
                 :label="t('settings.etcd.fields.retries.label')"
                 color="primary"
                 hide-details
@@ -97,7 +177,7 @@ async function importConfig() {
             <v-divider class="my-4" />
             <div class="text-subtitle-2 mb-2">TLS</div>
             <v-switch
-                v-model="settings.etcd.ssl.enabled"
+                v-model="etcdConfig.ssl.enabled"
                 label="TLS / SSL"
                 color="primary"
                 hide-details
@@ -106,7 +186,7 @@ async function importConfig() {
             <v-row dense>
                 <v-col cols="12" md="8">
                     <v-text-field
-                        v-model="settings.etcd.ssl.certificate"
+                        v-model="etcdConfig.ssl.certificate"
                         :label="t('settings.etcd.fields.certificate.label')"
                         readonly
                         density="comfortable"
@@ -124,7 +204,7 @@ async function importConfig() {
             <v-row dense>
                 <v-col cols="12" md="8">
                     <v-text-field
-                        v-model="settings.etcd.ssl.certKey"
+                        v-model="etcdConfig.ssl.certKey"
                         :label="t('settings.etcd.fields.certKey.label')"
                         readonly
                         density="comfortable"
@@ -142,7 +222,7 @@ async function importConfig() {
             <v-row dense>
                 <v-col cols="12" md="8">
                     <v-text-field
-                        v-model="settings.etcd.ssl.certChain"
+                        v-model="etcdConfig.ssl.certChain"
                         :label="t('settings.etcd.fields.certChain.label')"
                         readonly
                         density="comfortable"
@@ -161,13 +241,13 @@ async function importConfig() {
             <v-divider class="my-4" />
             <div class="text-subtitle-2 mb-2">{{ t('settings.auth.title') }}</div>
             <v-text-field
-                v-model="settings.etcdAuth.username"
+                v-model="etcdConfig.auth.username"
                 :label="t('settings.auth.fields.username.label')"
                 density="comfortable"
                 class="mb-2"
             />
             <v-text-field
-                v-model="settings.etcdAuth.password"
+                v-model="etcdConfig.auth.password"
                 :label="t('settings.auth.fields.password.label')"
                 type="password"
                 density="comfortable"

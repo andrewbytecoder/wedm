@@ -161,6 +161,8 @@ onUnmounted(() => {
             <router-view />
         </v-main>
 
+<!--        这里显示弹窗，当 show 为true的时候显示 -->
+
         <v-snackbar
             :model-value="store.message.show"
             :color="store.message.color"

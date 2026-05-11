@@ -1,6 +1,6 @@
 {
   "name": "etcd-manager",
-  "version": "v1.0.0.0",
+  "version": "1.0.0.0",
   "title": "wails etcd manager",
   "homepage": "https://github.com/andrewbytecoder/wedm",
   "bugs": {
