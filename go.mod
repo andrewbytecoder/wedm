@@ -1,4 +1,4 @@
-module github.com/icellmobilsoft/etcdmanager
+module github.com/andrewbytecoder/wedm
 
 go 1.22.0
 

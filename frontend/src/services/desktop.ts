@@ -1,4 +1,4 @@
-import * as WailsApp from '../../wailsjs/go/main/App';
+import * as WailsApp from '../../wailsjs/go/backend/App';
 
 /** Thin wrapper over tGo `App` bindings (replaces Electron `ipcRenderer` / `remoe`). */
 export const desktop = {

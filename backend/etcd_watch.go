@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"context"
@@ -52,10 +52,10 @@ func (a *App) runKVWatch(ctx context.Context, configJSON string) {
 			}
 			for _, ev := range wresp.Events {
 				payload := map[string]interface{}{
-					"type":         ev.Type.String(),
-					"key":          string(ev.Kv.Key),
-					"revision":     ev.Kv.ModRevision,
-					"isCanceled":   wresp.Canceled,
+					"type":       ev.Type.String(),
+					"key":        string(ev.Kv.Key),
+					"revision":   ev.Kv.ModRevision,
+					"isCanceled": wresp.Canceled,
 				}
 				b, _ := json.Marshal(payload)
 				runtime.EventsEmit(a.ctx, "etcd:kv", string(b))

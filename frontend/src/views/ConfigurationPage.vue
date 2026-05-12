@@ -19,6 +19,7 @@ const app = useAppStore();
 const tab = ref(0);
 const helpOpen = ref(false);
 
+//  持久化配置
 function persist() {
     // 保存所有配置（语言、观察者设置等），不强制要求 ETCD 配置
     settings.persistToLocalStorage();

@@ -1,4 +1,4 @@
-import * as WailsApp from '../../wailsjs/go/main/App';
+import * as WailsApp from '../../wailsjs/go/backend/App';
 
 export function readConfigJSON(): string {
     return localStorage.getItem('config') ?? '{}';

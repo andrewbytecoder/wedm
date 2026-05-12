@@ -238,6 +238,7 @@ export const useSettingsStore = defineStore('settings', {
             localStorage.setItem('config', JSON.stringify(doc));
         },
         persistToLocalStorage() {
+            //  使用浏览器本次存储
             const raw = localStorage.getItem('config');
             let doc: Record<string, unknown> = {};
             if (raw) {
