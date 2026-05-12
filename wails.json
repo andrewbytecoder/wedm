@@ -1,14 +1,23 @@
 {
-  "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "wedm",
-  "outputfilename": "wedm",
-  "frontend:install": "npm install",
-  "frontend:build": "npm run build",
-  "frontend:dev:watcher": "npm run dev",
-  "frontend:dev:serverUrl": "auto",
-  "icon": "build_files/icon.ico",
-  "author": {
-    "name": "wangyazhou",
-    "email": "wangyazhoujy@gmail.com"
-  }
+    "$schema": "https://wails.io/schemas/config.v2.json",
+    "name": "wedm",
+    "outputfilename": "wedm",
+    "frontend:install": "npm install",
+    "frontend:build": "npm run build",
+    "frontend:dev:watcher": "npm run dev",
+    "frontend:dev:serverUrl": "auto",
+    "author": {
+        "name": "wangyazhou",
+        "email": "wangyazhoujy@gmail.com"
+    },
+    "info": {
+        "companyName": "你的公司名",
+        "productName": "你的产品名",
+        "productVersion": "1.0.0",
+        "icon": {
+            "windows": "assets/icon.ico",
+            "macos": "assets/icon.png",
+            "linux": "assets/icon.png"
+        }
+    }
 }
