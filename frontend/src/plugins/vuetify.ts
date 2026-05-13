@@ -2,6 +2,8 @@ import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
 
+//  引入图标， 具体图标进入到css里面直接搜索即可
+//  import '@mdi/font/css/materialdesignicons.css';
 
 export default createVuetify({
     theme: {

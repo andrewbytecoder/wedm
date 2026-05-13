@@ -51,15 +51,27 @@ function onSaveAs(name: string) {
             </v-col>
 <!--             md="auto"  根据内容自适应宽度 当缩放宽度的时候 这一列进行适当缩放，保证所有书看着比较合适 -->
             <v-col cols="12" md="auto" class="d-flex flex-wrap gap-2">
-                <v-btn color="success" :disabled="!settings.profileNames.length" @click="loadProfile" >
-                    <v-icon start icon="mdi-download" />
+                <v-btn
+                    color="success"
+                    prepend-icon="mdi-download"
+                    :disabled="!settings.profileNames.length"
+                    @click="loadProfile"
+                >
+<!--                start 将图标放到文本的左边, 并和文本保持一定的间距    添加按钮的图标-->
+<!--                    <v-icon start icon="mdi-download" />-->
                     {{ t('settings.actions.load') }}
                 </v-btn>
-                <v-btn color="primary" variant="tonal" @click="saveAsOpen = true">
-                    <v-icon start icon="mdi-content-save-move" />
+                <v-btn
+                    color="primary"
+                    prepend-icon="mdi-content-save-move"
+                    variant="tonal"
+                    @click="saveAsOpen = true"
+                >
+<!--                    <v-icon start icon="mdi-content-save-move" />-->
                     {{ t('saveAsDialog.actions.saveAs') }}
                 </v-btn>
             </v-col>
+<!--             配置文件名字-->
             <v-col cols="12" md="4">
                 <v-text-field
                     v-model="settings.config.name"
@@ -83,7 +95,8 @@ function onSaveAs(name: string) {
                 />
             </v-col>
         </v-row>
-
+<!--        如果点击上面的按钮， 在屏幕中心的位置显示，是否显示根据 saveAsOpen 是否为true 来显示 -->
+<!--       弹窗实现-->
         <SaveAsDialog
             v-model="saveAsOpen"
             :initial-name="`${settings.config.name}-copy`"

@@ -63,18 +63,20 @@ onMounted(() => {
         <ConfigHelpPanel v-model="helpOpen" />
 <!--         tabs 显示 -->
         <v-tabs v-model="tab" bg-color="surface-variant" class="mb-4" rounded>
-            <v-tab :value="0">{{ t('settings.profile.title') }}</v-tab>
-            <v-tab :value="1">{{ t('settings.etcd.title') }}</v-tab>
+            <v-tab :value="0">{{ t('settings.etcd.title') }}</v-tab>
+            <v-tab :value="1">{{ t('settings.profile.title') }}</v-tab>
             <v-tab :value="2">{{ t('settings.watchers.title') }}</v-tab>
             <v-tab :value="3">{{ t('settings.misc.title') }}</v-tab>
         </v-tabs>
 <!--        tab  配置窗口 -->
         <v-tabs-window v-model="tab">
+<!--             连接配置表单-->
             <v-tabs-window-item :value="0">
-                <ConfigProfileBar />
-            </v-tabs-window-item>
-            <v-tabs-window-item :value="1">
                 <ConfigConnectionForm />
+            </v-tabs-window-item>
+<!--            全局配置文件-->
+            <v-tabs-window-item :value="1">
+                <ConfigProfileBar />
             </v-tabs-window-item>
             <v-tabs-window-item :value="2">
                 <ConfigWatchersCard />

@@ -10,6 +10,7 @@ const { t } = useI18n();
 const settings = useSettingsStore();
 const app = useAppStore();
 
+//  浏览器选择 SSL 文件
 async function browseSsl(field: 'certificate' | 'certKey' | 'certChain') {
     const path = await desktop.openSSLFilePath();
     if (!path) {
@@ -19,7 +20,7 @@ async function browseSsl(field: 'certificate' | 'certKey' | 'certChain') {
     const label = path.replace(/^.*[/\\]/, '');
     settings.setSslFileField(field, label, pem);
 }
-
+//  清理证书文件的缓存
 function clearSsl(field: 'certificate' | 'certKey' | 'certChain') {
     settings.clearSslField(field);
 }
@@ -144,7 +145,9 @@ async function importConfig() {
 
 <template>
     <v-card variant="outlined" class="pa-4 mb-4">
-        <v-card-title>{{ t('settings.etcd.title') }}</v-card-title>
+        <v-card-title>
+            {{ t('settings.etcd.title') }}
+        </v-card-title>
         <v-card-text>
             <v-text-field
                 v-model="etcdConfig.hosts"
@@ -159,6 +162,7 @@ async function importConfig() {
                 density="comfortable"
                 class="mb-2"
             />
+<!--             type="number" 添加number 类型会自动添加能增加 减少按钮-->
             <v-text-field
                 v-model.number="etcdConfig.dialTimeout"
                 type="number"
@@ -183,7 +187,7 @@ async function importConfig() {
                 hide-details
                 class="mb-2"
             />
-            <v-row dense>
+            <v-row dense v-if="etcdConfig.ssl.enabled">
                 <v-col cols="12" md="8">
                     <v-text-field
                         v-model="etcdConfig.ssl.certificate"
@@ -201,7 +205,7 @@ async function importConfig() {
                     }}</v-btn>
                 </v-col>
             </v-row>
-            <v-row dense>
+            <v-row dense v-if="etcdConfig.ssl.enabled">
                 <v-col cols="12" md="8">
                     <v-text-field
                         v-model="etcdConfig.ssl.certKey"
@@ -219,7 +223,7 @@ async function importConfig() {
                     }}</v-btn>
                 </v-col>
             </v-row>
-            <v-row dense>
+            <v-row dense v-if="etcdConfig.ssl.enabled">
                 <v-col cols="12" md="8">
                     <v-text-field
                         v-model="etcdConfig.ssl.certChain"
