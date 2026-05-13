@@ -14,6 +14,18 @@ export default defineConfig({
     server: {
         port: 34115,
         strictPort: true,
+        hmr: {
+            overlay: true,
+        },
+        watch: {
+            ignored: [
+                '**/node_modules/**',
+                '**/.git/**',
+                '**/dist/**',
+                '**/build/**',
+                '!**/src/**',
+            ],
+        },
     },
     base: './',
 });

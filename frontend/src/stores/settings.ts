@@ -191,6 +191,7 @@ export const useSettingsStore = defineStore('settings', {
             }
         },
         loadProfileByName(name: string) {
+            // 加载配置文件
             const raw = localStorage.getItem('config');
             if (!raw) {
                 return;
@@ -201,6 +202,8 @@ export const useSettingsStore = defineStore('settings', {
             } catch {
                 return;
             }
+
+            //  profiles 字段可能存在也可能不存在，如果不存在就 定义为 undefined
             const profiles = doc.profiles as Record<string, unknown>[] | undefined;
             if (!Array.isArray(profiles)) {
                 return;

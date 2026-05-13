@@ -9,15 +9,5 @@
     "author": {
         "name": "wangyazhou",
         "email": "wangyazhoujy@gmail.com"
-    },
-    "info": {
-        "companyName": "你的公司名",
-        "productName": "你的产品名",
-        "productVersion": "1.0.0",
-        "icon": {
-            "windows": "assets/icon.ico",
-            "macos": "assets/icon.png",
-            "linux": "assets/icon.png"
-        }
     }
 }

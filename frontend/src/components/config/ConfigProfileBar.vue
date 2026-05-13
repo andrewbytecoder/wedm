@@ -5,15 +5,18 @@ import SaveAsDialog from '@/components/dialogs/SaveAsDialog.vue';
 import { useAppStore } from '@/stores/app';
 import { useSettingsStore } from '@/stores/settings';
 
+// 语言国际化
 const { t } = useI18n();
 const settings = useSettingsStore();
 const app = useAppStore();
 const saveAsOpen = ref(false);
 
+//  加载配置文件
 function loadProfile() {
     settings.loadProfileByName(settings.activeProfileName);
 }
 
+// 将原先的配置保存为新的配置文件
 function onSaveAs(name: string) {
     const r = settings.saveProfileAs(name);
     if (r === 'empty') {
@@ -31,7 +34,11 @@ function onSaveAs(name: string) {
 
 <template>
     <v-card variant="outlined" class="pa-4 mb-4">
+<!--   所有元素上下居中对齐  v-row 一行 将每一行（<v-row>）分为 12 个等宽的列 -->
         <v-row dense align="center">
+<!--            v-col 格栅系统-->
+<!--            cols="12"  总体12 当使用最小屏幕的情况下，宽度一整行-->
+<!--             lg="4" 大型屏幕设备 xl="4"-->
             <v-col cols="12" md="4">
                 <v-select
                     v-model="settings.activeProfileName"
@@ -42,8 +49,9 @@ function onSaveAs(name: string) {
                     hide-details
                 />
             </v-col>
+<!--             md="auto"  根据内容自适应宽度 当缩放宽度的时候 这一列进行适当缩放，保证所有书看着比较合适 -->
             <v-col cols="12" md="auto" class="d-flex flex-wrap gap-2">
-                <v-btn color="success" :disabled="!settings.profileNames.length" @click="loadProfile">
+                <v-btn color="success" :disabled="!settings.profileNames.length" @click="loadProfile" >
                     <v-icon start icon="mdi-download" />
                     {{ t('settings.actions.load') }}
                 </v-btn>
