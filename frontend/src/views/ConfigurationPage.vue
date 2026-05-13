@@ -78,6 +78,7 @@ onMounted(() => {
             <v-tabs-window-item :value="1">
                 <ConfigProfileBar />
             </v-tabs-window-item>
+<!--            观察者配置界面-->
             <v-tabs-window-item :value="2">
                 <ConfigWatchersCard />
             </v-tabs-window-item>
