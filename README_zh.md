@@ -94,7 +94,7 @@ wails build
 
 ## 🐛 问题反馈与功能建议
 
-- 发现 Bug？请通过 [Issue Tracker](https://github.com/icellmobilsoft/etcdmanager/issues) 报告。
+- 发现 Bug？请通过 [Issue Tracker](https://github.com/andrewbytecoder/wedm/issues) 报告。
 - 有新功能想法？请创建一个 Issue 并标记为 `enhancement`。
 
 ## 📄 许可证

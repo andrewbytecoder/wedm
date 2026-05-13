@@ -132,6 +132,7 @@ onMounted(async () => {
         });
     }
 });
+
 const socialLinks = [
     {
         icon: 'mdi-github',
