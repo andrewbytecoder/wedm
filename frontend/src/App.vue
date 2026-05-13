@@ -132,6 +132,31 @@ onMounted(async () => {
         });
     }
 });
+const socialLinks = [
+    {
+        icon: 'mdi-github',
+        url: 'https://github.com/andrewbytecoder/wedm',  // 替换为您的 GitHub 地址
+        tooltip: 'GitHub Repository'
+    },
+    {
+        icon: 'mdi-email',
+        url: 'mailto:wangyazhoujy@gmail.com',  // 替换为您的邮箱
+        tooltip: 'Contact wangyazhoujy@gmail.com'
+    },
+    {
+        icon: 'mdi-sina-weibo',
+        url: 'https://weibo.com/andrewbytecoder',  // 替换为您的 Instagram
+        tooltip: 'Follow us on sina'
+    },
+];
+
+function openLink(url: string) {
+    if (url.startsWith('mailto:')) {
+        window.location.href = url;  // 使用系统默认邮件客户端
+    } else {
+        window.open(url, '_blank');   // 其他链接在新标签页打开
+    }
+}
 
 onUnmounted(() => {
     offWatcherEvent?.();
@@ -140,25 +165,57 @@ onUnmounted(() => {
 
 <template>
     <v-app>
-        <v-app-bar density="comfortable" flat>
+        <v-app-bar
+            density="comfortable"
+            scroll-behavior="hide elevate"
+            rounded
+        >
+<!--            点击图标显示导航栏-->
             <v-app-bar-nav-icon
                 :aria-label="t('shell.toggleMenu')"
                 @click="store.drawer = !store.drawer"
             />
             <v-toolbar-title>wails etcd desktop manager</v-toolbar-title>
             <v-spacer />
+<!--            右上角提示信息-->
             <span v-if="settings.currentProfileLabel" class="text-caption me-4">
                 {{ t('shell.profile') }}: {{ settings.currentProfileLabel }}
             </span>
+<!--            如果版本信息非空，显示版本信息-->
             <span v-if="store.version" class="text-caption text-medium-emphasis">
                 v{{ store.version }}
             </span>
         </v-app-bar>
-
+<!--    点击跳转到对应的路由-->
         <AppMenu />
 
         <v-main>
             <router-view />
+<!--             添加脚注 flex-column 垂直排列 -->
+            <v-footer app color="surface-light" class="px-4 flex-column py-2">
+                <div class="d-flex ga-3">
+                    <v-tooltip
+                        v-for="link in socialLinks"
+                        :key="link.icon"
+                        location="top"
+                    >
+                        <template #activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                :icon="link.icon"
+                                density="comfortable"
+                                variant="text"
+                                @click="openLink(link.url)"
+                            ></v-btn>
+                        </template>
+                        <span>{{ link.tooltip }}</span>
+                    </v-tooltip>
+                </div>
+                <v-divider class="my-2" thickness="2" width="50"></v-divider>
+                <div class="text-center w-100 text-caption">
+                    © {{ new Date().getFullYear() }} — <strong>wails etcd desktop manager</strong>. All rights reserved.
+                </div>
+            </v-footer>
         </v-main>
 
 <!--        这里显示弹窗，当 show 为true的时候显示 -->
@@ -173,5 +230,8 @@ onUnmounted(() => {
         </v-snackbar>
 
         <WhatsNewDialog v-model="showWhatsNew" :version="store.version || 'dev'" />
+
+        <v-spacer />
+
     </v-app>
 </template>

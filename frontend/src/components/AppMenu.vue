@@ -20,6 +20,7 @@ function leaseDisabled() {
     <v-navigation-drawer v-model="store.drawer" width="260">
         <v-list density="compact" nav>
             <v-list-item to="/configure" prepend-icon="mdi-cog" :title="t('menu.settings')" />
+<!--            to 条状到对应的导航页面-->
             <v-list-item
                 to="/cluster"
                 prepend-icon="mdi-cloud-outline"
