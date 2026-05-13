@@ -92,6 +92,7 @@ export const useSettingsStore = defineStore('settings', {
             const u = state.etcdAuth.username;
             const at = u ? '@' : '';
             if (state.profile.name) {
+                //  $用来去变量 为字符串
                 return `${state.profile.name} - ${u || ''}${at}${state.profile.host}:${state.profile.port}`;
             }
             return '';

@@ -145,7 +145,7 @@ onUnmounted(() => {
                 :aria-label="t('shell.toggleMenu')"
                 @click="store.drawer = !store.drawer"
             />
-            <v-toolbar-title>etcd manager</v-toolbar-title>
+            <v-toolbar-title>wails etcd desktop manager</v-toolbar-title>
             <v-spacer />
             <span v-if="settings.currentProfileLabel" class="text-caption me-4">
                 {{ t('shell.profile') }}: {{ settings.currentProfileLabel }}
