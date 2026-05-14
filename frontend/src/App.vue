@@ -7,6 +7,7 @@ import { listWatchers } from '@/services/watcherStorage';
 import { rehydrateActivatedWatchers } from '@/services/watcherRuntime';
 import { useAppStore } from '@/stores/app';
 import { useSettingsStore } from '@/stores/settings';
+import { applyFontSettings } from '@/i18n/font'
 import { EventsOn } from '../wailsjs/runtime';
 
 const { t } = useI18n();
@@ -121,7 +122,7 @@ onMounted(async () => {
     void settings.refreshMenuCapabilitiesFromEtcd();
 
     // 应用字体设置
-    applyFontSettings();
+    applyFontSettings(settings.config.fontFamily, settings.config.fontSize);
 
     const v = store.version || 'dev';
     if (!localStorage.getItem(`news${v}`)) {
@@ -136,17 +137,6 @@ onMounted(async () => {
         });
     }
 });
-
-// 应用字体设置
-function applyFontSettings() {
-    const root = document.documentElement;
-    root.style.setProperty('--app-font-family', settings.config.fontFamily);
-    root.style.setProperty('--app-font-size', `${settings.config.fontSize}px`);
-
-    // 直接应用到 body 元素
-    document.body.style.fontFamily = settings.config.fontFamily;
-    document.body.style.fontSize = `${settings.config.fontSize}px`;
-}
 
 const socialLinks = [
     {

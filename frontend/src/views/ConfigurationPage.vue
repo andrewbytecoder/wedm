@@ -11,6 +11,7 @@ import ConfigConnectionForm from '@/components/config/ConfigConnectionForm.vue';
 import ConfigWatchersCard from '@/components/config/ConfigWatchersCard.vue';
 import ConfigMiscCard from '@/components/config/ConfigMiscCard.vue';
 import { rehydrateActivatedWatchers, stopAllUserWatchBackends } from '@/services/watcherRuntime';
+import { applyFontSettings } from '@/i18n/font'
 
 const { t } = useI18n();
 const settings = useSettingsStore();
@@ -31,7 +32,7 @@ function persist() {
     document.querySelector('html')?.setAttribute('lang', lang);
 
     // 应用字体设置
-    applyFontSettings();
+    applyFontSettings(settings.config.fontFamily, settings.config.fontSize);
 
     app.showMessage(t('settings.messages.success'), 'success');
 
@@ -52,17 +53,6 @@ function persist() {
     }
 }
 
-// 应用字体设置
-function applyFontSettings() {
-    const root = document.documentElement;
-    root.style.setProperty('--app-font-family', settings.config.fontFamily);
-    root.style.setProperty('--app-font-size', `${settings.config.fontSize}px`);
-
-    // 直接应用到 body 元素
-    document.body.style.fontFamily = settings.config.fontFamily;
-    document.body.style.fontSize = `${settings.config.fontSize}px`;
-}
-
 useConfigHotkeys({
     onSave: persist,
     helpOpen,
@@ -71,7 +61,7 @@ useConfigHotkeys({
 onMounted(() => {
     settings.hydrateFromLocalStorage();
     // 初始化时应用字体设置
-    applyFontSettings();
+    applyFontSettings(settings.config.fontFamily, settings.config.fontSize);
 });
 
 </script>
