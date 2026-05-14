@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, type ComponentPublicInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
 import KeyTreePanel from '@/components/keys/KeyTreePanel.vue';
 import KeyEditorPanel from '@/components/keys/KeyEditorPanel.vue';
@@ -45,7 +45,15 @@ const isOpenAll = ref(false);
 const helpPanel = ref<number | null>(null);
 const treePanelRef = ref<{ setExpandedAll: (open: boolean) => void } | null>(null);
 const editorPanelRef = ref<{ submit: () => Promise<void> } | null>(null);
-const touchButtonRef = ref<HTMLElement | null>(null);
+const touchButtonRef = ref<ComponentPublicInstance | HTMLElement | null>(null);
+
+function touchButtonRootEl(): HTMLElement | null {
+    const v = touchButtonRef.value;
+    if (!v) return null;
+    if (v instanceof HTMLElement) return v;
+    const el = (v as ComponentPublicInstance).$el as unknown;
+    return el instanceof HTMLElement ? el : null;
+}
 
 let kvWatchUnsub: (() => void) | undefined;
 let softRefreshTimer: ReturnType<typeof setTimeout> | undefined;
@@ -284,15 +292,16 @@ function handleKeyDown(e: KeyboardEvent) {
     const isCtrl = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
 
-    // Ctrl+T - 触摸选中项
+    // Ctrl+Shift+T - 触摸选中项（避免与浏览器 Ctrl+T 冲突）
     if (isCtrl && key === 't') {
         e.preventDefault();
 
-        // 触发按钮点击动画效果
-        if (touchButtonRef.value) {
-            touchButtonRef.value.classList.add('touch-button-active');
+        // 触发按钮点击动画效果（v-btn 的 ref 是组件实例，需取 $el）
+        const touchEl = touchButtonRootEl();
+        if (touchEl) {
+            touchEl.classList.add('touch-button-active');
             setTimeout(() => {
-                touchButtonRef.value?.classList.remove('touch-button-active');
+                touchButtonRootEl()?.classList.remove('touch-button-active');
             }, 300);
         }
 
@@ -300,7 +309,7 @@ function handleKeyDown(e: KeyboardEvent) {
         return;
     }
 
-    // Ctrl+R - 删除选中项
+    // Ctrl+Shift+R - 删除选中项（避免与浏览器 Ctrl+R 刷新冲突）
     if (isCtrl && key === 'r') {
         e.preventDefault();
         deleteMany();
@@ -362,13 +371,14 @@ onMounted(() => {
     kvWatchUnsub = EventsOn('etcd:kv', () => scheduleSoftRefreshFromWatch());
     void etcdStartKVWatch();
 
-    // 添加全局键盘事件监听器
-    document.addEventListener('keydown', handleKeyDown);
+    // 添加全局键盘事件监听器（使用 capture 阶段以确保优先捕获）
+    document.addEventListener('keydown', handleKeyDown, true);
+
 });
 
 onUnmounted(() => {
     // 移除全局键盘事件监听器
-    document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('keydown', handleKeyDown, true);
 
     kvWatchUnsub?.();
     kvWatchUnsub = undefined;
