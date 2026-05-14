@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Mousetrap from 'mousetrap';
+import { useHotkey } from 'vuetify';
 import LeaseEditorPanel from '@/components/leases/LeaseEditorPanel.vue';
 import DeleteConfirmDialog from '@/components/dialogs/DeleteConfirmDialog.vue';
 import PurgeConfirmDialog from '@/components/dialogs/PurgeConfirmDialog.vue';
@@ -140,42 +140,50 @@ function tryOpenEditorFromSelection() {
     openEditor(selected.value[0]);
 }
 
-function bindHotkeys() {
-    Mousetrap.bind(['mod+a', 'ctrl+a'], () => {
-        tryOpenEditorFromSelection();
-        return false;
-    });
-    Mousetrap.bind(['mod+r', 'ctrl+r'], () => {
-        deleteMany();
-        return false;
-    });
-    Mousetrap.bind(['mod+p', 'ctrl+p'], () => {
-        purge();
-        return false;
-    });
-    Mousetrap.bind(['mod+h', 'ctrl+h'], () => {
-        toggleHelp();
-        return false;
-    });
-    Mousetrap.bind('esc', () => {
-        if (editorOpen.value) {
-            closeEditor();
+/** useHotkey 在原生 input 聚焦时不触发；行勾选后焦点留在 checkbox 上，需移开焦点快捷键才生效 */
+function onTableSelectionChange(_rows: string[]) {
+    //  勾选之后只要鼠标移动走，焦点就自动移开，避免快捷键失效
+    void nextTick(() => {
+        const active = document.activeElement;
+        if (
+            active instanceof HTMLInputElement &&
+            active.type === 'checkbox' &&
+            active.closest('.v-data-table')
+        ) {
+            active.blur();
         }
-        return false;
     });
 }
 
-function unbindHotkeys() {
-    Mousetrap.unbind(['mod+a', 'ctrl+a', 'mod+r', 'ctrl+r', 'mod+p', 'ctrl+p', 'mod+h', 'ctrl+h', 'esc']);
-}
-
-onMounted(() => {
-    bindHotkeys();
-    void load();
+useHotkey('ctrl+a', (e) => {
+    e.preventDefault();
+    tryOpenEditorFromSelection();
 });
 
-onUnmounted(() => {
-    unbindHotkeys();
+useHotkey('ctrl+r', (e) => {
+    e.preventDefault();
+    deleteMany();
+});
+
+useHotkey('ctrl+p', (e) => {
+    e.preventDefault();
+    purge();
+});
+
+useHotkey('ctrl+h', (e) => {
+    e.preventDefault();
+    toggleHelp();
+});
+
+useHotkey('esc', (e) => {
+    e.preventDefault();
+    if (editorOpen.value) {
+        closeEditor();
+    }
+});
+
+onMounted(() => {
+    void load();
 });
 </script>
 
@@ -189,10 +197,10 @@ onUnmounted(() => {
                         <v-expansion-panel-text>
                             <div class="markdown-help text-body-2" v-html="platform.getHelp(t('leaseManager.help.text'))" />
                             <p class="text-caption mt-2">
-                                <strong>{{ platform.getMeta() }} + A</strong> — {{ t('common.help.shortcuts.openEditor') }} ·
-                                <strong>{{ platform.getMeta() }} + R</strong> — {{ t('common.help.shortcuts.remove') }} ·
-                                <strong>{{ platform.getMeta() }} + P</strong> — {{ t('common.help.shortcuts.purge') }} ·
-                                <strong>{{ platform.getMeta() }} + H</strong> — {{ t('common.help.shortcuts.help') }} ·
+                                <strong>Ctrl + A</strong> — {{ t('common.help.shortcuts.openEditor') }} ·
+                                <strong>Ctrl + R</strong> — {{ t('common.help.shortcuts.remove') }} ·
+                                <strong>Ctrl + P</strong> — {{ t('common.help.shortcuts.purge') }} ·
+                                <strong>Ctrl + H</strong> — {{ t('common.help.shortcuts.help') }} ·
                                 <strong>Esc</strong> — {{ t('common.help.shortcuts.closeEditor') }}
                             </p>
                         </v-expansion-panel-text>
@@ -229,6 +237,7 @@ onUnmounted(() => {
                     <v-data-table
                         v-model="selected"
                         density="compact"
+                        @update:model-value="onTableSelectionChange"
                         :headers="[
                             { title: t('leaseManager.columns.id'), key: 'id', sortable: true },
                             { title: t('leaseEditor.fields.grant.label'), key: 'ttl', sortable: true },
