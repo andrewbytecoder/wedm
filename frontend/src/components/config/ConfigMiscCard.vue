@@ -12,6 +12,7 @@ const usersPattern = computed({
         settings.users.pattern = v === '' ? null : v;
     },
 });
+
 </script>
 
 <template>

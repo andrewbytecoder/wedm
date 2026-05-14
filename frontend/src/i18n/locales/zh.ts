@@ -302,6 +302,14 @@ export default {
                         label: '语言',
                         tooltip: '界面语言。',
                     },
+                    fontFamily: {
+                        label: '字体',
+                        tooltip: '界面字体。',
+                    },
+                    fontSize: {
+                        label: '字体大小',
+                        tooltip: '界面字体大小（像素）。',
+                    },
                     animateBg: {
                         label: '切换背景动画',
                         tooltip: '启用或禁用动画背景。',

@@ -30,6 +30,31 @@ function onSaveAs(name: string) {
     saveAsOpen.value = false;
     app.showMessage(t('settings.messages.success'), 'success');
 }
+
+
+const fontFamilies = [
+    { title: 'Roboto (Default)', value: 'Roboto, sans-serif' },
+    { title: 'Arial', value: 'Arial, sans-serif' },
+    { title: 'Helvetica', value: 'Helvetica, sans-serif' },
+    { title: 'Times New Roman', value: '"Times New Roman", serif' },
+    { title: 'Courier New', value: '"Courier New", monospace' },
+    { title: 'Verdana', value: 'Verdana, sans-serif' },
+    { title: 'Georgia', value: 'Georgia, serif' },
+    { title: '微软雅黑', value: '"Microsoft YaHei", sans-serif' },
+    { title: '宋体', value: 'SimSun, serif' },
+    { title: '黑体', value: 'SimHei, sans-serif' },
+];
+
+const fontSizes = [
+    { title: '12px', value: 12 },
+    { title: '13px', value: 13 },
+    { title: '14px (Default)', value: 14 },
+    { title: '15px', value: 15 },
+    { title: '16px', value: 16 },
+    { title: '18px', value: 18 },
+    { title: '20px', value: 20 },
+];
+
 </script>
 
 <template>
@@ -90,6 +115,28 @@ function onSaveAs(name: string) {
                     item-title="title"
                     item-value="value"
                     :label="t('settings.misc.fields.language.label')"
+                    density="comfortable"
+                    hide-details
+                />
+            </v-col>
+            <v-col cols="12" md="3">
+                <v-select
+                    v-model="settings.config.fontFamily"
+                    :items="fontFamilies"
+                    item-title="title"
+                    item-value="value"
+                    :label="t('settings.misc.fields.fontFamily.label')"
+                    density="comfortable"
+                    hide-details
+                />
+            </v-col>
+            <v-col cols="12" md="3">
+                <v-select
+                    v-model="settings.config.fontSize"
+                    :items="fontSizes"
+                    item-title="title"
+                    item-value="value"
+                    :label="t('settings.misc.fields.fontSize.label')"
                     density="comfortable"
                     hide-details
                 />

@@ -1,0 +1,35 @@
+/* 全局字体样式 */
+:root {
+    --app-font-family: 'Roboto', sans-serif;
+    --app-font-size: 14px;
+}
+
+body {
+    font-family: var(--app-font-family), serif !important;
+    font-size: var(--app-font-size) !important;
+}
+
+/* 确保所有文本元素继承字体设置 */
+* {
+    font-family: inherit;
+}
+
+/* Vuetify 组件字体覆盖 */
+.v-application {
+    font-family: var(--app-font-family), serif !important;
+    font-size: var(--app-font-size) !important;
+}
+
+.v-application * {
+    font-family: inherit !important;
+}
+
+/* 标题和特殊元素的字体大小调整 */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--app-font-family), serif !important;
+}
+
+.v-btn, .v-text-field, .v-select, .v-card, .v-dialog {
+    font-family: var(--app-font-family), serif !important;
+    font-size: var(--app-font-size) !important;
+}

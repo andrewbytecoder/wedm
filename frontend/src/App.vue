@@ -119,6 +119,10 @@ onMounted(async () => {
     await store.loadDesktopMetadata();
     settings.hydrateFromLocalStorage();
     void settings.refreshMenuCapabilitiesFromEtcd();
+
+    // 应用字体设置
+    applyFontSettings();
+
     const v = store.version || 'dev';
     if (!localStorage.getItem(`news${v}`)) {
         showWhatsNew.value = true;
@@ -132,6 +136,17 @@ onMounted(async () => {
         });
     }
 });
+
+// 应用字体设置
+function applyFontSettings() {
+    const root = document.documentElement;
+    root.style.setProperty('--app-font-family', settings.config.fontFamily);
+    root.style.setProperty('--app-font-size', `${settings.config.fontSize}px`);
+
+    // 直接应用到 body 元素
+    document.body.style.fontFamily = settings.config.fontFamily;
+    document.body.style.fontSize = `${settings.config.fontSize}px`;
+}
 
 const socialLinks = [
     {

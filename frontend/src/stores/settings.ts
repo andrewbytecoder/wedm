@@ -58,6 +58,8 @@ export const useSettingsStore = defineStore('settings', {
             animateBg: false,
             background: true,
             name: 'default',
+            fontFamily: 'Roboto, sans-serif' as string,
+            fontSize: 14 as number,
         },
         users: {
             pattern: null as string | null,
@@ -118,6 +120,8 @@ export const useSettingsStore = defineStore('settings', {
                 animateBg: Boolean(cfg.animateBg),
                 background: cfg.background !== false,
                 name: String(cfg.name ?? 'default'),
+                fontFamily: String(cfg.fontFamily ?? 'Roboto, sans-serif'),
+                fontSize: Number(cfg.fontSize ?? 14),
             };
             this.activeProfileName = this.config.name;
             this.etcd = {

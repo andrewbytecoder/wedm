@@ -320,6 +320,14 @@ export default {
                         label: 'Language',
                         tooltip: 'The languge of the UI.',
                     },
+                    fontFamily: {
+                        label: 'Font Family',
+                        tooltip: 'The font family of the UI.',
+                    },
+                    fontSize: {
+                        label: 'Font Size',
+                        tooltip: 'The font size of the UI in pixels.',
+                    },
                     animateBg: {
                         label: 'Toggle background animation',
                         tooltip: 'Enable of disable animated background.',

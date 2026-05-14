@@ -27,7 +27,11 @@ function persist() {
     // 切换语言
     const lang = settings.config.language === 'zh' ? 'zh' : 'en';
     i18n.global.locale.value = lang;
+    // 通知浏览器渲染语言有变，否则可能因为语言切换导致界面渲染出现错位，这也是为什么很多开源工具界面切换语言需要重启的原因
     document.querySelector('html')?.setAttribute('lang', lang);
+
+    // 应用字体设置
+    applyFontSettings();
 
     app.showMessage(t('settings.messages.success'), 'success');
 
@@ -48,6 +52,17 @@ function persist() {
     }
 }
 
+// 应用字体设置
+function applyFontSettings() {
+    const root = document.documentElement;
+    root.style.setProperty('--app-font-family', settings.config.fontFamily);
+    root.style.setProperty('--app-font-size', `${settings.config.fontSize}px`);
+
+    // 直接应用到 body 元素
+    document.body.style.fontFamily = settings.config.fontFamily;
+    document.body.style.fontSize = `${settings.config.fontSize}px`;
+}
+
 useConfigHotkeys({
     onSave: persist,
     helpOpen,
@@ -55,7 +70,10 @@ useConfigHotkeys({
 
 onMounted(() => {
     settings.hydrateFromLocalStorage();
+    // 初始化时应用字体设置
+    applyFontSettings();
 });
+
 </script>
 
 <template>
