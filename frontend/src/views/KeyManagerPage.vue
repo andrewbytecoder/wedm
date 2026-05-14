@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Mousetrap from 'mousetrap';
 import KeyTreePanel from '@/components/keys/KeyTreePanel.vue';
 import KeyEditorPanel from '@/components/keys/KeyEditorPanel.vue';
 import DeleteConfirmDialog from '@/components/dialogs/DeleteConfirmDialog.vue';
@@ -46,6 +45,7 @@ const isOpenAll = ref(false);
 const helpPanel = ref<number | null>(null);
 const treePanelRef = ref<{ setExpandedAll: (open: boolean) => void } | null>(null);
 const editorPanelRef = ref<{ submit: () => Promise<void> } | null>(null);
+const touchButtonRef = ref<HTMLElement | null>(null);
 
 let kvWatchUnsub: (() => void) | undefined;
 let softRefreshTimer: ReturnType<typeof setTimeout> | undefined;
@@ -115,7 +115,6 @@ async function softRefreshKeys() {
             tooltip: it.value,
         }));
     } catch {
-        /* keep existing rows */
     }
 }
 
@@ -281,48 +280,96 @@ function toggleHelp() {
     helpPanel.value = helpPanel.value === 0 ? null : 0;
 }
 
-function bindHotkeys() {
-    Mousetrap.bind(['mod+t', 'ctrl+t'], () => {
-        void touchSelected();
-        return false;
-    });
-    Mousetrap.bind(['mod+r', 'ctrl+r'], () => {
-        deleteMany();
-        return false;
-    });
-    Mousetrap.bind(['mod+h', 'ctrl+h'], () => {
-        toggleHelp();
-        return false;
-    });
-    Mousetrap.bind('esc', () => {
-        if (editorOpen.value) {
-            closeEditor();
+function handleKeyDown(e: KeyboardEvent) {
+    const isCtrl = e.ctrlKey || e.metaKey;
+    const key = e.key.toLowerCase();
+
+    // Ctrl+T - 触摸选中项
+    if (isCtrl && key === 't') {
+        e.preventDefault();
+
+        // 触发按钮点击动画效果
+        if (touchButtonRef.value) {
+            touchButtonRef.value.classList.add('touch-button-active');
+            setTimeout(() => {
+                touchButtonRef.value?.classList.remove('touch-button-active');
+            }, 300);
         }
-        return false;
-    });
-    Mousetrap.bind(['mod+s', 'ctrl+s'], () => {
+
+        void touchSelected();
+        return;
+    }
+
+    // Ctrl+R - 删除选中项
+    if (isCtrl && key === 'r') {
+        e.preventDefault();
+        deleteMany();
+        return;
+    }
+
+    // Ctrl+H - 切换帮助面板
+    if (isCtrl && key === 'h') {
+        e.preventDefault();
+        toggleHelp();
+        return;
+    }
+
+    // Ctrl+S - 保存编辑器
+    if (isCtrl && key === 's') {
+        e.preventDefault();
         if (editorOpen.value) {
             void editorPanelRef.value?.submit();
         }
-        return false;
-    });
-}
+        return;
+    }
 
-function unbindHotkeys() {
-    Mousetrap.unbind(['mod+t', 'ctrl+t', 'mod+r', 'ctrl+r', 'mod+h', 'ctrl+h', 'esc', 'mod+s', 'ctrl+s']);
+    // Ctrl+左箭头 - 切换帮助面板
+    if (isCtrl && key === 'arrowleft') {
+        e.preventDefault();
+        if (helpPanel.value === 0) {
+            helpPanel.value = null;
+        } else {
+            helpPanel.value = 0;
+        }
+        return;
+    }
+
+    // Ctrl+右箭头 - 切换帮助面板
+    if (isCtrl && key === 'arrowright') {
+        e.preventDefault();
+        if (helpPanel.value === 0) {
+            helpPanel.value = null;
+        } else {
+            helpPanel.value = 0;
+        }
+        return;
+    }
+
+    // Esc - 关闭编辑器
+    if (key === 'escape') {
+        e.preventDefault();
+        if (editorOpen.value) {
+            closeEditor();
+        }
+        return;
+    }
 }
 
 onMounted(() => {
     settings.hydrateFromLocalStorage();
     separator.value = settings.separator;
     void refresh();
-    bindHotkeys();
     kvWatchUnsub = EventsOn('etcd:kv', () => scheduleSoftRefreshFromWatch());
     void etcdStartKVWatch();
+
+    // 添加全局键盘事件监听器
+    document.addEventListener('keydown', handleKeyDown);
 });
 
 onUnmounted(() => {
-    unbindHotkeys();
+    // 移除全局键盘事件监听器
+    document.removeEventListener('keydown', handleKeyDown);
+
     kvWatchUnsub?.();
     kvWatchUnsub = undefined;
     void etcdStopKVWatch();
@@ -344,6 +391,8 @@ onUnmounted(() => {
                         <strong>{{ platform.getMeta() }} + T</strong> — {{ t('keyManager.help.shortcuts.touch') }} ·
                         <strong>{{ platform.getMeta() }} + S</strong> — {{ t('common.help.shortcuts.save') }} ·
                         <strong>{{ platform.getMeta() }} + H</strong> — {{ t('common.help.shortcuts.help') }} ·
+                        <strong>{{ platform.getMeta() }} + ← / →</strong> — {{ t('settings.help.shortcuts.leftArrow') }} /
+                        {{ t('settings.help.shortcuts.rightArrow') }} ·
                         <strong>Esc</strong> — {{ t('common.help.shortcuts.closeEditor') }}
                     </p>
                 </v-expansion-panel-text>
@@ -396,7 +445,12 @@ onUnmounted(() => {
                             <v-icon start icon="mdi-plus" />
                             {{ t('common.actions.create.label') }}
                         </v-btn>
-                        <v-btn class="me-2" variant="tonal" @click="touchSelected">
+                        <v-btn
+                            ref="touchButtonRef"
+                            class="me-2"
+                            variant="tonal"
+                            @click="touchSelected"
+                        >
                             <v-icon start icon="mdi-hand-back-right" />
                             {{ t('keyManager.actions.touchAll.label') }}
                         </v-btn>
@@ -508,5 +562,21 @@ onUnmounted(() => {
 }
 .cursor-copy {
     cursor: copy;
+}
+
+@keyframes touch-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.touch-button-active {
+    animation: touch-pulse 0.3s ease-in-out;
 }
 </style>
