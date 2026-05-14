@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import Mousetrap from 'mousetrap';
+import { useHotkey } from 'vuetify';
 import WatcherEditorPanel from '@/components/watchers/WatcherEditorPanel.vue';
 import DeleteConfirmDialog from '@/components/dialogs/DeleteConfirmDialog.vue';
 import PurgeConfirmDialog from '@/components/dialogs/PurgeConfirmDialog.vue';
@@ -209,46 +209,54 @@ function toggleHelp() {
     helpPanel.value = helpPanel.value === 0 ? null : 0;
 }
 
-function bindHotkeys() {
-    Mousetrap.bind(['mod+o', 'ctrl+o'], () => {
-        void toggleMany();
-        return false;
-    });
-    Mousetrap.bind(['mod+p', 'ctrl+p'], () => {
-        purge();
-        return false;
-    });
-    Mousetrap.bind(['mod+r', 'ctrl+r'], () => {
-        deleteMany();
-        return false;
-    });
-    Mousetrap.bind(['mod+a', 'ctrl+a'], () => {
-        addItem();
-        return false;
-    });
-    Mousetrap.bind(['mod+h', 'ctrl+h'], () => {
-        toggleHelp();
-        return false;
-    });
-    Mousetrap.bind('esc', () => {
-        if (editorOpen.value) {
-            closeEditor();
+/** useHotkey 在原生 input 聚焦时不触发；行勾选后焦点留在 checkbox 上，需移开焦点快捷键才生效 */
+function onTableSelectionChange(_rows: string[]) {
+    void nextTick(() => {
+        const active = document.activeElement;
+        if (
+            active instanceof HTMLInputElement &&
+            active.type === 'checkbox' &&
+            active.closest('.v-data-table')
+        ) {
+            active.blur();
         }
-        return false;
     });
 }
 
-function unbindHotkeys() {
-    Mousetrap.unbind(['mod+o', 'ctrl+o', 'mod+p', 'ctrl+p', 'mod+r', 'ctrl+r', 'mod+a', 'ctrl+a', 'mod+h', 'ctrl+h', 'esc']);
-}
-
-onMounted(() => {
-    bindHotkeys();
-    load();
+useHotkey('ctrl+o', (e) => {
+    e.preventDefault();
+    void toggleMany();
 });
 
-onUnmounted(() => {
-    unbindHotkeys();
+useHotkey('ctrl+p', (e) => {
+    e.preventDefault();
+    purge();
+});
+
+useHotkey('ctrl+r', (e) => {
+    e.preventDefault();
+    deleteMany();
+});
+
+useHotkey('ctrl+a', (e) => {
+    e.preventDefault();
+    addItem();
+});
+
+useHotkey('ctrl+h', (e) => {
+    e.preventDefault();
+    toggleHelp();
+});
+
+useHotkey('esc', (e) => {
+    e.preventDefault();
+    if (editorOpen.value) {
+        closeEditor();
+    }
+});
+
+onMounted(() => {
+    load();
 });
 </script>
 
@@ -312,6 +320,7 @@ onUnmounted(() => {
                     <v-data-table
                         v-model="selected"
                         density="compact"
+                        @update:model-value="onTableSelectionChange"
                         :headers="[
                             { title: t('watcherManager.columns.name'), key: 'name', sortable: true },
                             { title: t('watcherManager.columns.key'), key: 'key', sortable: true },

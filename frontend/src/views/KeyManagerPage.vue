@@ -292,13 +292,14 @@ function handleKeyDown(e: KeyboardEvent) {
     const isCtrl = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
 
-    // Ctrl+Shift+T - 触摸选中项（避免与浏览器 Ctrl+T 冲突）
+    // Ctrl+T - 触摸选中项（避免与浏览器 Ctrl+T 冲突）
     if (isCtrl && key === 't') {
         e.preventDefault();
 
         // 触发按钮点击动画效果（v-btn 的 ref 是组件实例，需取 $el）
         const touchEl = touchButtonRootEl();
         if (touchEl) {
+            //  触发效果，然后到时间清理效果，实现按按动效果
             touchEl.classList.add('touch-button-active');
             setTimeout(() => {
                 touchButtonRootEl()?.classList.remove('touch-button-active');
@@ -309,7 +310,7 @@ function handleKeyDown(e: KeyboardEvent) {
         return;
     }
 
-    // Ctrl+Shift+R - 删除选中项（避免与浏览器 Ctrl+R 刷新冲突）
+    // Ctrl+R - 删除选中项（避免与浏览器 Ctrl+R 刷新冲突）
     if (isCtrl && key === 'r') {
         e.preventDefault();
         deleteMany();
