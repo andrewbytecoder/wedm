@@ -105,7 +105,20 @@ const fontSizes = [
                     hide-details
                 />
             </v-col>
-            <v-col cols="12" md="3">
+        </v-row>
+<!--        如果点击上面的按钮， 在屏幕中心的位置显示，是否显示根据 saveAsOpen 是否为true 来显示 -->
+<!--       弹窗实现-->
+        <SaveAsDialog
+            v-model="saveAsOpen"
+            :initial-name="`${settings.config.name}-copy`"
+            @save-as="onSaveAs"
+        />
+    </v-card>
+
+    <v-card variant="outlined" class="pa-4 mb-4">
+        <!--   所有元素上下居中对齐  v-row 一行 将每一行（<v-row>）分为 12 个等宽的列 -->
+        <v-row dense align="center">
+            <v-col cols="12" md="4">
                 <v-select
                     v-model="settings.config.language"
                     :items="[
@@ -119,7 +132,7 @@ const fontSizes = [
                     hide-details
                 />
             </v-col>
-            <v-col cols="12" md="3">
+            <v-col cols="12" md="4">
                 <v-select
                     v-model="settings.config.fontFamily"
                     :items="fontFamilies"
@@ -130,7 +143,7 @@ const fontSizes = [
                     hide-details
                 />
             </v-col>
-            <v-col cols="12" md="3">
+            <v-col cols="12" md="4">
                 <v-select
                     v-model="settings.config.fontSize"
                     :items="fontSizes"
@@ -142,12 +155,13 @@ const fontSizes = [
                 />
             </v-col>
         </v-row>
-<!--        如果点击上面的按钮， 在屏幕中心的位置显示，是否显示根据 saveAsOpen 是否为true 来显示 -->
-<!--       弹窗实现-->
+        <!--        如果点击上面的按钮， 在屏幕中心的位置显示，是否显示根据 saveAsOpen 是否为true 来显示 -->
+        <!--       弹窗实现-->
         <SaveAsDialog
             v-model="saveAsOpen"
             :initial-name="`${settings.config.name}-copy`"
             @save-as="onSaveAs"
         />
     </v-card>
+
 </template>

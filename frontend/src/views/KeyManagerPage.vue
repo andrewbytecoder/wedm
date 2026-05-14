@@ -17,7 +17,7 @@ import {
     etcdStopKVWatch,
     etcdTouchKeys,
 } from '@/services/etcdBridge';
-import { EventsOn } from '../../wailsjs/runtime/runtime';
+import { EventsOn } from '../../wailsjs/runtime';
 import { PlatformService } from '@/services/platform.service';
 import { useAppStore } from '@/stores/app';
 import { useSettingsStore } from '@/stores/settings';

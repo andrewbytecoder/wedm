@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useHotkey } from 'vuetify';
 import { i18n } from '@/i18n';
 import { useSettingsStore } from '@/stores/settings';
 import { useAppStore } from '@/stores/app';
-import { useConfigHotkeys } from '@/composables/useConfigHotkeys';
 import ConfigHelpPanel from '@/components/config/ConfigHelpPanel.vue';
 import ConfigProfileBar from '@/components/config/ConfigProfileBar.vue';
 import ConfigConnectionForm from '@/components/config/ConfigConnectionForm.vue';
@@ -20,26 +20,21 @@ const app = useAppStore();
 const tab = ref(0);
 const helpOpen = ref(false);
 
-//  持久化配置
+const totalTabs = 4;
+
 function persist() {
-    // 保存所有配置（语言、观察者设置等），不强制要求 ETCD 配置
     settings.persistToLocalStorage();
 
-    // 切换语言
     const lang = settings.config.language === 'zh' ? 'zh' : 'en';
     i18n.global.locale.value = lang;
-    // 通知浏览器渲染语言有变，否则可能因为语言切换导致界面渲染出现错位，这也是为什么很多开源工具界面切换语言需要重启的原因
     document.querySelector('html')?.setAttribute('lang', lang);
 
-    // 应用字体设置
     applyFontSettings(settings.config.fontFamily, settings.config.fontSize);
 
     app.showMessage(t('settings.messages.success'), 'success');
 
-    // 只有配置了 ETCD 的 host 和 port 才尝试连接和刷新能力
     const hasHost = String(settings.etcd.hosts || '').trim();
     const hasPort = settings.etcd.port;
-    //  只有在配置了etcd的host和port的情况下，才会尝试连接和刷新
     if (hasHost && hasPort) {
         void settings.refreshMenuCapabilitiesFromEtcd();
         void (async () => {
@@ -53,14 +48,32 @@ function persist() {
     }
 }
 
-useConfigHotkeys({
-    onSave: persist,
-    helpOpen,
+useHotkey('ctrl+s', (e) => {
+    e.preventDefault();
+    persist();
+});
+
+useHotkey('ctrl+h', (e) => {
+    e.preventDefault();
+    helpOpen.value = !helpOpen.value;
+});
+
+useHotkey('ctrl+arrowleft', (e) => {
+    e.preventDefault();
+    if (tab.value > 0) {
+        tab.value--;
+    }
+});
+
+useHotkey('ctrl+arrowright', (e) => {
+    e.preventDefault();
+    if (tab.value < totalTabs - 1) {
+        tab.value++;
+    }
 });
 
 onMounted(() => {
     settings.hydrateFromLocalStorage();
-    // 初始化时应用字体设置
     applyFontSettings(settings.config.fontFamily, settings.config.fontSize);
 });
 
@@ -69,24 +82,19 @@ onMounted(() => {
 <template>
     <v-container fluid class="pa-4">
         <ConfigHelpPanel v-model="helpOpen" />
-<!--         tabs 显示 -->
         <v-tabs v-model="tab" bg-color="surface-variant" class="mb-4" rounded>
             <v-tab :value="0">{{ t('settings.etcd.title') }}</v-tab>
             <v-tab :value="1">{{ t('settings.profile.title') }}</v-tab>
             <v-tab :value="2">{{ t('settings.watchers.title') }}</v-tab>
             <v-tab :value="3">{{ t('settings.misc.title') }}</v-tab>
         </v-tabs>
-<!--        tab  配置窗口 -->
         <v-tabs-window v-model="tab">
-<!--             连接配置表单-->
             <v-tabs-window-item :value="0">
                 <ConfigConnectionForm />
             </v-tabs-window-item>
-<!--            全局配置文件-->
             <v-tabs-window-item :value="1">
                 <ConfigProfileBar />
             </v-tabs-window-item>
-<!--            观察者配置界面-->
             <v-tabs-window-item :value="2">
                 <ConfigWatchersCard />
             </v-tabs-window-item>
