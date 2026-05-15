@@ -9,7 +9,9 @@ import { useAppStore } from '@/stores/app';
 import { useSettingsStore } from '@/stores/settings';
 import { applyFontSettings } from '@/i18n/font'
 import { EventsOn } from '../wailsjs/runtime';
+import { useTheme } from 'vuetify'
 
+const theme = useTheme()
 const { t } = useI18n();
 const store = useAppStore();
 const settings = useSettingsStore();
@@ -191,6 +193,10 @@ onUnmounted(() => {
             <span v-if="store.version" class="text-caption text-medium-emphasis">
                 v{{ store.version }}
             </span>
+            <v-btn
+                @click="theme.toggle()"
+                icon="mdi-theme-light-dark"
+            ></v-btn>
         </v-app-bar>
 <!--    点击跳转到对应的路由-->
         <AppMenu />

@@ -21,6 +21,7 @@ const app = useAppStore();
 const manualRefreshing = ref(false);
 const pollError = ref<string | null>(null);
 const payload = shallowRef<ClusterDashboardPayload | null>(null);
+const isLoading = ref(true);
 
 const timeLabels = ref<string[]>([]);
 const rssSeries = ref<(number | null)[]>([]);
@@ -101,9 +102,11 @@ async function refresh(opts?: { silent?: boolean }) {
         if (silent) {
             pollError.value = null;
         }
+        isLoading.value = false;
     } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         pollError.value = msg;
+        isLoading.value = false;
         if (!silent) {
             app.showMessage(msg, 'error');
         }
@@ -176,7 +179,23 @@ onUnmounted(() => {
         <v-divider />
         <v-card-text>
             <ClusterDashboardMetaStrip :payload="payload" :poll-error="pollError" />
+
+            <div v-if="isLoading" class="mt-4">
+                <v-row dense>
+                    <v-col cols="12" lg="6">
+                        <v-skeleton-loader type="image" height="260" />
+                    </v-col>
+                    <v-col cols="12" lg="6">
+                        <v-skeleton-loader type="image" height="260" />
+                    </v-col>
+                    <v-col cols="12">
+                        <v-skeleton-loader type="image" height="220" />
+                    </v-col>
+                </v-row>
+            </div>
+
             <ClusterDashboardCharts
+                v-else
                 class="mt-4"
                 :time-labels="timeLabels"
                 :rss-mb="rssSeries"
@@ -185,6 +204,7 @@ onUnmounted(() => {
                 :rpc-key-count="rpcKeySeries"
                 :lease-buckets="leaseBars"
             />
+
             <ClusterDashboardKvStream class="mt-4" :events="events" />
         </v-card-text>
     </v-card>

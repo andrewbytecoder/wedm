@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import mousetrap from 'mousetrap';
-import { PlatformService } from '@/services/platform.service';
 import {
     fetchAlarmsForMember,
     fetchClusterMaintenanceStatus,
@@ -12,12 +10,15 @@ import {
 import ClusterHealthDashboard from '@/components/cluster/ClusterHealthDashboard.vue';
 import type { GenericObject } from '@/types';
 import { useAppStore } from '@/stores/app';
+import ClusterHelpPanel from '@/components/cluster/ClusterHelpPanel.vue';
+import { useHotkey } from 'vuetify/framework';
+
+
+
 const { t } = useI18n();
 const appStore = useAppStore();
-const platformService = shallowRef(new PlatformService());
 
 const showHelp = ref(false);
-const helpTab = ref('info');
 const loadError = ref<string | null>(null);
 
 const data = ref<{ members: ClusterMember[]; header: GenericObject }>({
@@ -92,95 +93,26 @@ function cancelStatusDialog() {
     statusDialog.value = false;
 }
 
-let hotkeys: ReturnType<typeof mousetrap> | null = null;
+useHotkey('ctrl+h', (e) => {
+    e.preventDefault();
+    showHelp.value = !showHelp.value;
+});
 
 onMounted(() => {
-    hotkeys = mousetrap(document.body);
-    hotkeys.bind(['ctrl+h', 'command+h'], (e) => {
-        e.preventDefault();
-        showHelp.value = !showHelp.value;
-    });
     void fetchMembers();
 });
 
-onUnmounted(() => {
-    hotkeys?.unbind(['ctrl+h', 'command+h']);
-});
 </script>
 
 <template>
     <v-container fluid class="pa-4">
+<!--         加载信息失败，显示报错信息   -->
         <v-alert v-if="loadError" type="warning" variant="tonal" class="mb-4" prominent>
             {{ loadError }}
         </v-alert>
-
-        <ClusterHealthDashboard />
-
-        <v-expand-transition>
-            <v-card v-show="showHelp" class="mb-4" variant="outlined">
-                <v-card-title class="d-flex align-center">
-                    <v-tooltip location="bottom" max-width="220">
-                        <template #activator="{ props: tip }">
-                            <v-icon
-                                v-bind="tip"
-                                data-test="health.help.icon"
-                                color="primary"
-                                class="me-2"
-                                icon="mdi-help-circle-outline"
-                            />
-                        </template>
-                        <span data-test="health.help.span">{{ t('common.help.tooltip') }}</span>
-                    </v-tooltip>
-                    <span data-test="health.title.toolbar-title">{{ t('cluster.title') }}</span>
-                </v-card-title>
-                <v-divider />
-                <v-card-text>
-                    <v-tabs v-model="helpTab" color="primary" grow>
-                        <v-tab value="info" data-test="health.help-info.tab">{{
-                            t('common.help.tabs.info')
-                        }}</v-tab>
-                        <v-tab value="keys" data-test="health.help-shortcuts.tab">{{
-                            t('common.help.tabs.shortcuts')
-                        }}</v-tab>
-                    </v-tabs>
-                    <v-tabs-window v-model="helpTab">
-                        <v-tabs-window-item value="info">
-                            <v-card flat class="pa-2">
-                                <h2 data-test="health.help-info-title.h3" class="text-h6">
-                                    {{ t('common.help.infoTitle') }}
-                                </h2>
-                                <p class="my-3" />
-                                <div
-                                    data-test="health.help-text.p"
-                                    class="markdown-body"
-                                    v-html="platformService.getHelp(t('cluster.help.text'))"
-                                />
-                            </v-card>
-                        </v-tabs-window-item>
-                        <v-tabs-window-item value="keys">
-                            <v-card flat class="pa-2">
-                                <v-row align="center">
-                                    <v-col cols="12" sm="2">
-                                        <p
-                                            data-test="health.help-shortcuts-rounded.p"
-                                            class="rounded text-caption font-weight-bold"
-                                        >
-                                            {{ `${platformService.getMeta()} + H` }}
-                                        </p>
-                                    </v-col>
-                                    <v-col cols="12" sm="10">
-                                        <p data-test="health.help-shortcuts-help.p" class="text-body-2">
-                                            {{ t('common.help.shortcuts.help') }}
-                                        </p>
-                                    </v-col>
-                                </v-row>
-                            </v-card>
-                        </v-tabs-window-item>
-                    </v-tabs-window>
-                </v-card-text>
-            </v-card>
-        </v-expand-transition>
-
+<!--        展示帮助面板 快捷键  ctrl +h-->
+        <ClusterHelpPanel v-model="showHelp"/>
+<!--         集群信息表单  -->
         <v-card variant="outlined" class="mb-4">
             <v-list density="compact">
                 <v-list-item>
@@ -189,8 +121,8 @@ onUnmounted(() => {
                     </v-list-item-title>
                     <template #append>
                         <span data-test="health.data-header-clusterId.tile-content">{{
-                            data.header.cluster_id
-                        }}</span>
+                                data.header.cluster_id
+                            }}</span>
                     </template>
                 </v-list-item>
                 <v-list-item>
@@ -199,8 +131,8 @@ onUnmounted(() => {
                     </v-list-item-title>
                     <template #append>
                         <span data-test="health.data-header-memberId.tile-content">{{
-                            data.header.member_id
-                        }}</span>
+                                data.header.member_id
+                            }}</span>
                     </template>
                 </v-list-item>
                 <v-list-item>
@@ -209,8 +141,8 @@ onUnmounted(() => {
                     </v-list-item-title>
                     <template #append>
                         <span data-test="health.data-header-revision.tile-content">{{
-                            data.header.revision
-                        }}</span>
+                                data.header.revision
+                            }}</span>
                     </template>
                 </v-list-item>
                 <v-list-item>
@@ -219,12 +151,16 @@ onUnmounted(() => {
                     </v-list-item-title>
                     <template #append>
                         <span data-test="health.data-header-raftTerm.tile-content">{{
-                            data.header.raft_term
-                        }}</span>
+                                data.header.raft_term
+                            }}</span>
                     </template>
                 </v-list-item>
             </v-list>
         </v-card>
+
+
+        <!--         dashboard 表格界面-->
+        <ClusterHealthDashboard />
 
         <v-toolbar density="comfortable" flat class="mb-2">
             <v-toolbar-title data-test="health.cluster-subtitle.toolbar-title">

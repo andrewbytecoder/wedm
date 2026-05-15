@@ -1,4 +1,5 @@
 import 'vuetify/styles';
+// materialdesignicons 中所有的图标集合，导入到本地
 import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
 import { md2 } from 'vuetify/blueprints'

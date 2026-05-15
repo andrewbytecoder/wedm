@@ -74,7 +74,7 @@ function goToIssues() {
                         <div class="text-body-2 mb-4" data-test="about.copyright.div">
                             {{ t('about.copyright', { year }) }}
                         </div>
-                        <v-toolbar density="compact" flat color="surface-variant" rounded>
+                        <v-toolbar density="compact" flat color="surface" rounded>
                             <v-spacer />
                             <v-tooltip location="bottom" max-width="220">
                                 <template #activator="{ props }">

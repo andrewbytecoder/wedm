@@ -10,6 +10,7 @@ import './assets/styles.css';
 const app = createApp(App);
 const pinia = createPinia();
 
+
 //  使用pinia进行存储
 app.use(pinia);
 app.use(router);
