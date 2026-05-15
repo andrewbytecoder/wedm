@@ -9,6 +9,7 @@ import {
     listClusterMembers,
     type ClusterMember,
 } from '@/services/cluster.service';
+import ClusterHealthDashboard from '@/components/cluster/ClusterHealthDashboard.vue';
 import type { GenericObject } from '@/types';
 import { useAppStore } from '@/stores/app';
 const { t } = useI18n();
@@ -112,6 +113,8 @@ onUnmounted(() => {
         <v-alert v-if="loadError" type="warning" variant="tonal" class="mb-4" prominent>
             {{ loadError }}
         </v-alert>
+
+        <ClusterHealthDashboard />
 
         <v-expand-transition>
             <v-card v-show="showHelp" class="mb-4" variant="outlined">

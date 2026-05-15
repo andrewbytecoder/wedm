@@ -363,7 +363,8 @@ export default {
             help: {
                 text: `* Basic info is displayed below about the ETCD cluster and its nodes.
                 * For additional details about each node, click the **info** button.
-                * You can perform **health check** on each node, by clicking the **heart** icon.`,
+                * You can perform **health check** on each node, by clicking the **heart** icon.
+                * The **live dashboard** polls cluster status, key counts, leases, the Prometheus metrics endpoint, and streams KV watch events while this page is open.`,
             },
             subtitle: 'Nodes',
             header: {
@@ -395,6 +396,33 @@ export default {
                     actions: {
                         close: 'Close',
                     },
+                },
+            },
+            dashboard: {
+                title: 'Live cluster dashboard',
+                loading: 'Updating snapshot…',
+                refresh: 'Refresh now',
+                metricsOk: '{n} Prometheus samples · {url}',
+                metricsError: 'Prometheus: {detail}',
+                meta: {
+                    members: 'Members',
+                    revision: 'Revision',
+                    keys: 'Keys (visible)',
+                    leases: 'Leases',
+                    dbSize: 'DB size (status)',
+                    version: 'Server version',
+                },
+                charts: {
+                    memoryTitle: 'Process memory (from /metrics)',
+                    keysTitle: 'Key counts',
+                    visibleKeysSeries: 'Keys (count API)',
+                    leaseTitle: 'Lease TTL buckets (sampled rows)',
+                    leaseAxis: 'Leases',
+                    leaseOther: 'Other / no TTL',
+                },
+                events: {
+                    title: 'KV watch stream (live)',
+                    empty: 'No watch events yet. Events appear when keys change while this page is open.',
                 },
             },
         },

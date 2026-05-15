@@ -343,7 +343,8 @@ export default {
             help: {
                 text: `* 下面显示有关 ETCD 集群及其节点的基本信息。
                 * 要查看每个节点的详细信息，请点击**信息**按钮。
-                * 您可以通过点击**心形**图标对每个节点执行**健康检查**。`,
+                * 您可以通过点击**心形**图标对每个节点执行**健康检查**。
+                * **实时面板**会在本页打开时定时拉取集群状态、键数量、租约、Prometheus 指标端点，并显示 KV 监听事件流。`,
             },
             subtitle: '节点',
             header: {
@@ -375,6 +376,33 @@ export default {
                     actions: {
                         close: '关闭',
                     },
+                },
+            },
+            dashboard: {
+                title: '集群实时面板',
+                loading: '正在刷新快照…',
+                refresh: '立即刷新',
+                metricsOk: '{n} 个 Prometheus 指标 · {url}',
+                metricsError: 'Prometheus: {detail}',
+                meta: {
+                    members: '成员',
+                    revision: '修订版本',
+                    keys: '键（可见范围）',
+                    leases: '租约',
+                    dbSize: '库大小（状态）',
+                    version: '服务端版本',
+                },
+                charts: {
+                    memoryTitle: '进程内存（/metrics）',
+                    keysTitle: '键数量',
+                    visibleKeysSeries: '键（Count API）',
+                    leaseTitle: '租约 TTL 分布（采样行）',
+                    leaseAxis: '租约数',
+                    leaseOther: '其他 / 无 TTL',
+                },
+                events: {
+                    title: 'KV 监听事件（实时）',
+                    empty: '暂无监听事件。在本页打开时若有键变更将显示在此处。',
                 },
             },
         },

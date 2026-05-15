@@ -41,6 +41,42 @@ export async function etcdPurgeAllKeys(): Promise<{ deleted: number }> {
     return JSON.parse(raw) as { deleted: number };
 }
 
+export type ClusterDashboardLeaseRow = {
+    id: string;
+    ttl: number;
+    grantedTTL: number;
+    keyCount: number;
+    keysSample: string[];
+};
+
+export type ClusterDashboardPayload = {
+    fetchedAtMs: number;
+    header: Record<string, unknown>;
+    status: {
+        version: string;
+        dbSize: number;
+        leader: string;
+        raftIndex: number;
+        raftTerm: number;
+    };
+    members: { id: string; name: string; clientURLs: string[] }[];
+    memberCount: number;
+    keyCount: number;
+    keyCountError: string;
+    leases: ClusterDashboardLeaseRow[];
+    leaseCount: number;
+    leaseListError: string;
+    metrics: Record<string, number>;
+    metricsURL: string;
+    metricsError: string;
+    metricsKeyCount: number;
+};
+
+export async function etcdClusterDashboard(): Promise<ClusterDashboardPayload> {
+    const raw = await WailsApp.EtcdClusterDashboard(readConfigJSON());
+    return JSON.parse(raw) as ClusterDashboardPayload;
+}
+
 export async function etcdPutKeyTx(
     key: string,
     value: string,
