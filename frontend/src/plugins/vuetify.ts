@@ -3,6 +3,7 @@ import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
 import { md2 } from 'vuetify/blueprints'
+import colors from 'vuetify/util/colors'
 
 //  引入图标， 具体图标进入到css里面直接搜索即可
 //  import '@mdi/font/css/materialdesignicons.css';
@@ -10,24 +11,85 @@ import { md2 } from 'vuetify/blueprints'
 export default createVuetify({
     blueprint: md2,
     theme: {
-        defaultTheme: 'dark',
+        defaultTheme: 'vscode-dark',
         themes: {
-            dark: {
-                //  自定义颜色
+            'vscode-dark': {
+                dark: true,
                 colors: {
-                    // 覆盖默认的 success 颜色
-                    success: '#00E676',
-                    // 覆盖默认的 primary 颜色
-                    primary: '#1976D2',
-                    // 你可以定义任意名字的颜色，然后在组件里用 color="myColor"
-                    brand: '#FF5722',
+                    // VSCode 主色调 - 蓝色
+                    primary: '#007acc',
+                    secondary: '#3a3d41',
+
+                    // VSCode 成功色 - 绿色
+                    success: '#4ec9b0',
+
+                    // VSCode 警告色 - 橙色
+                    warning: '#cca700',
+
+                    // VSCode 错误色 - 红色
+                    error: '#f44747',
+
+                    // VSCode 信息色
+                    info: '#569cd6',
+
+                    // VSCode 背景色
+                    background: '#1e1e1e',
+                    surface: '#252526',
+
+                    // VSCode 文本颜色
+                    'on-background': '#cccccc',
+                    'on-surface': '#cccccc',
+                },
+            },
+            'vscode-light': {
+                dark: false,
+                colors: {
+                    // VSCode Light 主题色
+                    primary: '#007acc',
+                    secondary: '#e8e8e8',
+
+                    success: '#4ec9b0',
+                    warning: '#cca700',
+                    error: '#f44747',
+                    info: '#569cd6',
+
+                    // VSCode Light 背景色
+                    background: '#ffffff',
+                    surface: '#f3f3f3',
+
+                    // VSCode Light 文本颜色
+                    'on-background': '#333333',
+                    'on-surface': '#333333',
+                },
+            },
+            dark: {
+                dark: true,
+                colors: {
+                    primary: colors.blue.darken2,
+                    secondary: colors.grey.darken3,
+                    success: colors.green.accent3,
+                    warning: colors.amber.base,
+                    error: colors.red.accent3,
+                    info: colors.blue.base,
+                    background: '#121212',
+                    surface: '#1e1e1e',
+                    'on-background': '#ffffff',
+                    'on-surface': '#ffffff',
                 },
             },
             light: {
+                dark: false,
                 colors: {
-                    success: '#4CAF50',
-                    primary: '#2196F3',
-                    brand: '#FF5722',
+                    primary: colors.blue.darken2,
+                    secondary: colors.grey.lighten4,
+                    success: colors.green.base,
+                    warning: colors.amber.darken3,
+                    error: colors.red.darken2,
+                    info: colors.blue.base,
+                    background: '#ffffff',
+                    surface: '#fafafa',
+                    'on-background': '#000000',
+                    'on-surface': '#000000',
                 },
             },
         },

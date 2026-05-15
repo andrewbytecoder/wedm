@@ -17,6 +17,49 @@ const store = useAppStore();
 const settings = useSettingsStore();
 const showWhatsNew = ref(false);
 
+// 主题列表和当前索引
+const themeList = ['vscode-dark', 'vscode-light', 'dark', 'light']
+const currentThemeIndex = ref(0)
+
+// 获取当前主题名称用于显示图标
+const getCurrentThemeIcon = () => {
+    const currentTheme = themeList[currentThemeIndex.value]
+    if (currentTheme.includes('dark')) {
+        return 'mdi-weather-night'
+    }
+    return 'mdi-weather-sunny'
+}
+
+// 获取当前主题的提示文本
+const getCurrentThemeTooltip = () => {
+    const currentTheme = themeList[currentThemeIndex.value]
+    const themeNames: Record<string, string> = {
+        'vscode-dark': 'VSCode Dark',
+        'vscode-light': 'VSCode Light',
+        'dark': 'Dark',
+        'light': 'Light'
+    }
+    return `Theme: ${themeNames[currentTheme] || currentTheme}`
+}
+
+// 切换到下一个主题
+const toggleTheme = () => {
+    currentThemeIndex.value = (currentThemeIndex.value + 1) % themeList.length
+    const nextTheme = themeList[currentThemeIndex.value]
+    theme.global.name.value = nextTheme
+
+    // 保存主题选择到 localStorage
+    localStorage.setItem('selected-theme', nextTheme)
+
+    // 根据主题添加对应的 CSS 类
+    document.body.classList.remove('vscode-dark-theme', 'vscode-light-theme')
+    if (nextTheme === 'vscode-dark') {
+        document.body.classList.add('vscode-dark-theme')
+    } else if (nextTheme === 'vscode-light') {
+        document.body.classList.add('vscode-light-theme')
+    }
+}
+
 function bridgeTypeToEventName(tpe: string): string {
     const u = tpe.toUpperCase();
     if (u === 'PUT') {
@@ -130,6 +173,25 @@ onMounted(async () => {
     if (!localStorage.getItem(`news${v}`)) {
         showWhatsNew.value = true;
     }
+
+    // 恢复之前保存的主题
+    const savedTheme = localStorage.getItem('selected-theme')
+    if (savedTheme && themeList.includes(savedTheme)) {
+        currentThemeIndex.value = themeList.indexOf(savedTheme)
+        theme.global.name.value = savedTheme
+
+        // 应用对应的 CSS 类
+        if (savedTheme === 'vscode-dark') {
+            document.body.classList.add('vscode-dark-theme')
+        } else if (savedTheme === 'vscode-light') {
+            document.body.classList.add('vscode-light-theme')
+        }
+    } else {
+        // 默认使用 vscode-dark
+        theme.global.name.value = 'vscode-dark'
+        document.body.classList.add('vscode-dark-theme')
+    }
+
     offWatcherEvent = EventsOn('watcher:event', onWatcherBridgeEvent);
     if (settings.isConfigured) {
         void rehydrateActivatedWatchers(settings.watchers.autoload, {
@@ -193,10 +255,18 @@ onUnmounted(() => {
             <span v-if="store.version" class="text-caption text-medium-emphasis">
                 v{{ store.version }}
             </span>
-            <v-btn
-                @click="theme.toggle()"
-                icon="mdi-theme-light-dark"
-            ></v-btn>
+            <v-tooltip
+                location="bottom"
+            >
+                <template #activator="{ props }">
+                    <v-btn
+                        v-bind="props"
+                        @click="toggleTheme"
+                        :icon="getCurrentThemeIcon()"
+                    ></v-btn>
+                </template>
+                <span>{{ getCurrentThemeTooltip() }}</span>
+            </v-tooltip>
         </v-app-bar>
 <!--    点击跳转到对应的路由-->
         <AppMenu />
