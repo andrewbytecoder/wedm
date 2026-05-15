@@ -34,7 +34,9 @@ const props = defineProps<{
 }>();
 
 /** 降低定时刷新时的重绘与布局抖动 */
-const chartUpdateOpts = { lazyUpdate: true };
+const chartUpdateOpts = {
+    lazyUpdate: true
+};
 
 const anim = {
     animationDurationUpdate: 0,
