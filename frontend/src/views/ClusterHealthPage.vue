@@ -223,7 +223,8 @@ onMounted(() => {
                             </template>
                         </v-list-item>
                     </v-list>
-                    <v-card-actions class="bg-surface-variant">
+                    <v-divider />
+                    <v-card-actions class="bg-surface">
                         <v-tooltip location="bottom" max-width="220">
                             <template #activator="{ props: tip }">
                                 <v-btn
@@ -264,7 +265,7 @@ onMounted(() => {
                 </v-card>
             </v-col>
         </v-row>
-
+<!-- 弹窗 dialog -->
         <v-dialog v-model="statusDialog" max-width="420" persistent>
             <v-card v-if="currentStats">
                 <v-card-title data-test="health.cluster-dialogs-info-title.toolbar-title">
