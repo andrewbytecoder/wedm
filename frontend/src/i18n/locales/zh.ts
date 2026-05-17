@@ -461,6 +461,12 @@ export default {
                     placeholder: '输入值..',
                     tooltip: '与此键关联的值',
                 },
+                valueType: {
+                    label: '值类型',
+                    text: '文本',
+                    json: 'JSON',
+                    yaml: 'YAML',
+                },
                 ttl: {
                     label: '生存时间 (TTL)',
                     placeholder: '输入数字..',
@@ -476,6 +482,9 @@ export default {
                 integerTtl: '必须为整数',
                 maxValue: '值太大。最大值：{max}',
                 minValue: '值太小。最小值：1',
+                invalidJson: '无效的 JSON 格式',
+                invalidJsonDetail: '无效的 JSON：{detail}',
+                invalidYaml: '无效的 YAML 格式',
                 noWatchRevisions: '桌面版（Wails）暂不支持来自 etcd 观察的实时修订历史。',
                 revisionsLive: '下面的修订版本从修订版本 1 开始流式传输自 etcd 观察（与传统应用的理念相同）。如果日志已被压缩，流可能会以错误结束。',
                 revisionsClickRow: '点击行以将该修订版本的值复制到值字段中，然后根据需要保存。',

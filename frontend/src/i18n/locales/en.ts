@@ -481,6 +481,12 @@ export default {
                     placeholder: 'Type in a value..',
                     tooltip: 'The value associated with this key',
                 },
+                valueType: {
+                    label: 'Value Type',
+                    text: 'Text',
+                    json: 'JSON',
+                    yaml: 'YAML',
+                },
                 ttl: {
                     label: 'Time to live (TTL)',
                     placeholder: 'Type in a number..',
@@ -497,6 +503,9 @@ export default {
                 integerTtl: 'Must be an integer',
                 maxValue: 'The value is too large. Max: {max}',
                 minValue: 'The value is too small. Min: 1',
+                invalidJson: 'Invalid JSON format',
+                invalidJsonDetail: 'Invalid JSON: {detail}',
+                invalidYaml: 'Invalid YAML format',
                 noWatchRevisions:
                     'Live revision history from etcd watches is not available in the desktop (Wails) build yet.',
                 revisionsLive:
