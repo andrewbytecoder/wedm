@@ -102,6 +102,11 @@ const registerThemes = () => {
 onMounted(async () => {
     if (editorRef.value != null) {
         registerThemes()
+
+        // 等待 DOM 完全渲染后再初始化编辑器
+        await nextTick()
+        // 额外等待一个渲染周期，确保 CSS 布局已生效
+        await new Promise(resolve => requestAnimationFrame(resolve))
         
         // 根据当前 Vuetify 主题选择 Monaco 主题
         const isDark = theme.global.current.value.dark
@@ -116,11 +121,11 @@ onMounted(async () => {
             readOnly: readonlyValue.value,
             colorDecorators: true,
             accessibilitySupport: 'off',
-            wordWrap: 'on',
+            wordWrap: 'off',
             tabSize: 2,
             folding: true,
             dragAndDrop: true,
-            fontFamily: '"Cascadia Code", "Fira Code", "JetBrains Mono", "Source Code Pro", Consolas, "Courier New", monospace',
+            fontFamily: 'Consolas, "Courier New", monospace',
             fontSize: 14,
             lineHeight: 20,
             fontLigatures: false,
@@ -177,6 +182,14 @@ onMounted(async () => {
                 
                 const value = editorNode.getValue()
                 emit('input', value)
+            })
+        }
+
+        // 当编辑器容器从隐藏变为可见时，重新触发布局
+        // 这确保了 Monaco 在容器可见后能正确测量字符尺寸
+        if (props.open) {
+            requestAnimationFrame(() => {
+                editorNode?.layout()
             })
         }
     }
@@ -312,6 +325,7 @@ onUnmounted(() => {
     width: 100%;
     min-height: 200px;
     height: 400px;
+    font-family: 'Consolas', 'Courier New', monospace;
 }
 
 :deep(.line-numbers) {
