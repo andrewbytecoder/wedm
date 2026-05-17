@@ -289,6 +289,12 @@ function toggleHelp() {
 }
 
 function handleKeyDown(e: KeyboardEvent) {
+    // 当焦点在 Monaco 编辑器内部时，不拦截任何快捷键
+    const target = e.target as HTMLElement | null;
+    if (target && target.closest('.monaco-editor')) {
+        return;
+    }
+
     const isCtrl = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
 
