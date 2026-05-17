@@ -48,6 +48,7 @@ const editorRef = ref(null)
 let editorNode = null
 const scrollOffset = { top: 0, left: 0 }
 let isUpdatingFromExternal = false // 标记是否从外部更新
+let resizeObserver = null
 
 const readonlyValue = computed(() => {
     return props.readonly || props.loading
@@ -64,6 +65,10 @@ const updateScroll = () => {
 }
 
 const destroyEditor = () => {
+    if (resizeObserver != null) {
+        resizeObserver.disconnect()
+        resizeObserver = null
+    }
     if (editorNode != null && editorNode.dispose != null) {
         const model = editorNode.getModel()
         if (model != null) {
@@ -111,6 +116,9 @@ onMounted(async () => {
         // 根据当前 Vuetify 主题选择 Monaco 主题
         const isDark = theme.global.current.value.dark
         const monacoTheme = isDark ? 'vscode-dark' : 'vscode-light'
+
+        // 获取容器的精确尺寸
+        const rect = editorRef.value.getBoundingClientRect()
         
         editorNode = monaco.editor.create(editorRef.value, {
             value: props.content,
@@ -130,22 +138,21 @@ onMounted(async () => {
             lineHeight: 20,
             fontLigatures: false,
             scrollBeyondLastLine: false,
-            automaticLayout: true,
+            automaticLayout: false,
             scrollbar: {
                 useShadows: false,
                 verticalScrollbarSize: 8,
                 horizontalScrollbarSize: 8,
             },
             contextmenu: false,
-            lineNumbersMinChars: 2,
-            lineDecorationsWidth: 0,
+            lineDecorationsWidth: 10,
             minimap: {
                 enabled: false,
             },
             selectionHighlight: false,
             renderLineHighlight: 'gutter',
-            cursorBlinking: 'smooth',
-            cursorSmoothCaretAnimation: 'on',
+            cursorBlinking: 'blink',
+            cursorSmoothCaretAnimation: 'off',
             cursorStyle: 'line',
             cursorWidth: 2,
             formatOnPaste: true,
@@ -158,6 +165,9 @@ onMounted(async () => {
             quickSuggestions: false,
             parameterHints: { enabled: false },
         })
+
+        // 使用精确测量尺寸初始化布局（取整避免子像素累积误差）
+        editorNode.layout({ width: Math.floor(rect.width), height: Math.floor(rect.height) })
 
         // 添加保存快捷键
         editorNode.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
@@ -182,16 +192,32 @@ onMounted(async () => {
                 
                 const value = editorNode.getValue()
                 emit('input', value)
+
+                // 内容变化后延迟触发布局，确保滚动条出现后的尺寸变化被正确计算
+                requestAnimationFrame(() => {
+                    if (editorNode != null && editorRef.value != null) {
+                        const r = editorRef.value.getBoundingClientRect()
+                        editorNode.layout({ width: Math.floor(r.width), height: Math.floor(r.height) })
+                    }
+                })
             })
         }
 
-        // 当编辑器容器从隐藏变为可见时，重新触发布局
-        // 这确保了 Monaco 在容器可见后能正确测量字符尺寸
-        if (props.open) {
-            requestAnimationFrame(() => {
-                editorNode?.layout()
-            })
-        }
+        // 使用 ResizeObserver 精确控制布局更新时机
+        let lastWidth = rect.width
+        let lastHeight = rect.height
+        resizeObserver = new ResizeObserver((entries) => {
+            if (editorNode == null) return
+            for (const entry of entries) {
+                const cr = entry.contentRect
+                if (cr.width !== lastWidth || cr.height !== lastHeight) {
+                    lastWidth = cr.width
+                    lastHeight = cr.height
+                    editorNode.layout({ width: Math.floor(cr.width), height: Math.floor(cr.height) })
+                }
+            }
+        })
+        resizeObserver.observe(editorRef.value)
     }
 })
 
@@ -326,6 +352,7 @@ onUnmounted(() => {
     min-height: 200px;
     height: 400px;
     font-family: 'Consolas', 'Courier New', monospace;
+    transform: translateZ(0);
 }
 
 :deep(.line-numbers) {

@@ -20,7 +20,7 @@ body {
     font-size: var(--app-font-size) !important;
 }
 
-.v-application * {
+.v-application *:not([class*="monaco"]):not([class*="view-lines"]):not([class*="view-line"]):not([class*="measure"]) {
     font-family: inherit !important;
 }
 
@@ -34,12 +34,7 @@ h1, h2, h3, h4, h5, h6 {
     font-size: var(--app-font-size) !important;
 }
 
-/* Monaco 编辑器需要独立的字体环境，防止光标位置计算错误 */
-.monaco-editor,
-.monaco-editor * {
-    font-family: initial !important;
-    font-size: initial !important;
-}
+
 
 /* VSCode 主题特定样式 */
 .vscode-dark-theme {
