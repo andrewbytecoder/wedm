@@ -62,6 +62,62 @@ export default createVuetify({
                     'on-surface': '#333333',
                 },
             },
+            'kite-dark': {
+                dark: true,
+                colors: {
+                    // Kite 暗黑主题 - 主色调蓝色
+                    primary: '#0ea5e9',
+                    secondary: '#475569',
+
+                    // Kite 成功色 - 绿色
+                    success: '#22c55e',
+
+                    // Kite 警告色 - 橙色
+                    warning: '#f59e0b',
+
+                    // Kite 错误色 - 红色
+                    error: '#ef4444',
+
+                    // Kite 信息色 - 蓝色
+                    info: '#3b82f6',
+
+                    // Kite 背景色 - 超深灰色
+                    background: '#0f172a',
+                    surface: '#1e293b',
+
+                    // Kite 文本颜色
+                    'on-background': '#e2e8f0',
+                    'on-surface': '#cbd5e1',
+                },
+            },
+            'kite-light': {
+                dark: false,
+                colors: {
+                    // Kite 亮色主题 - 主色调蓝色
+                    primary: '#0ea5e9',
+                    secondary: '#94a3b8',
+
+                    // Kite 成功色 - 绿色
+                    success: '#22c55e',
+
+                    // Kite 警告色 - 橙色
+                    warning: '#f59e0b',
+
+                    // Kite 错误色 - 红色
+                    error: '#ef4444',
+
+                    // Kite 信息色 - 蓝色
+                    info: '#3b82f6',
+
+                    // Kite 背景色 - 白色
+                    background: '#ffffff',
+                    surface: '#f8fafc',
+
+                    // Kite 文本颜色
+                    'on-background': '#0f172a',
+                    'on-surface': '#334155',
+                },
+            },
             dark: {
                 dark: true,
                 colors: {

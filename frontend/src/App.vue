@@ -18,7 +18,7 @@ const settings = useSettingsStore();
 const showWhatsNew = ref(false);
 
 // 主题列表和当前索引
-const themeList = ['vscode-dark', 'vscode-light', 'dark', 'light']
+const themeList = ['vscode-dark', 'vscode-light', 'kite-dark', 'kite-light', 'dark', 'light']
 const currentThemeIndex = ref(0)
 
 // 获取当前主题名称用于显示图标
@@ -36,6 +36,8 @@ const getCurrentThemeTooltip = () => {
     const themeNames: Record<string, string> = {
         'vscode-dark': 'VSCode Dark',
         'vscode-light': 'VSCode Light',
+        'kite-dark': 'Kite Dark',
+        'kite-light': 'Kite Light',
         'dark': 'Dark',
         'light': 'Light'
     }
