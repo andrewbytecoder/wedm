@@ -19,39 +19,53 @@ function leaseDisabled() {
 <template>
     <v-navigation-drawer v-model="store.drawer" expand-on-hover width="260">
         <v-list density="compact" nav>
-            <v-list-item to="/configure" prepend-icon="mdi-cog" :title="t('menu.settings')" />
-<!--            to 条状到对应的导航页面-->
-            <v-list-item
-                to="/cluster"
-                prepend-icon="mdi-cloud-outline"
-                :title="t('menu.manageCluster')"
-                :disabled="!isLimited"
-            />
-            <v-list-item to="/keys" prepend-icon="mdi-format-list-bulleted" :title="t('menu.manageKeys')" />
-            <v-list-item
-                to="/watchers"
-                prepend-icon="mdi-eye-outline"
-                :title="t('menu.manageWatchers')"
-            />
-            <v-list-item
-                to="/users"
-                prepend-icon="mdi-account-outline"
-                :title="t('menu.manageUsers')"
-                :disabled="!isLimited"
-            />
-            <v-list-item
-                to="/leases"
-                prepend-icon="mdi-timer-outline"
-                :title="t('menu.manageLeases')"
-                :disabled="leaseDisabled()"
-            />
-            <v-list-item
-                to="/roles"
-                prepend-icon="mdi-shield-account-outline"
-                :title="t('menu.manageRoles')"
-                :disabled="!isLimited"
-            />
-            <v-list-item to="/about" prepend-icon="mdi-information-outline" :title="t('menu.about')" />
+            <div class="d-flex flex-column justify-space-between mb-6 bg-surface" style="height: calc(100vh - 100px);">
+                <div class="d-flex flex-column">
+                    <v-list-item
+                        to="/configure"
+                        prepend-icon="mdi-cog"
+                        :title="t('menu.settings')"
+                    />
+                    <!--            to 条状到对应的导航页面-->
+                    <v-list-item
+                        to="/cluster"
+                        prepend-icon="mdi-cloud-outline"
+                        :title="t('menu.manageCluster')"
+                        :disabled="!isLimited"
+                    />
+                    <v-list-item to="/keys" prepend-icon="mdi-format-list-bulleted" :title="t('menu.manageKeys')" />
+                    <v-list-item
+                        to="/watchers"
+                        prepend-icon="mdi-eye-outline"
+                        :title="t('menu.manageWatchers')"
+                    />
+                    <v-list-item
+                        to="/users"
+                        prepend-icon="mdi-account-outline"
+                        :title="t('menu.manageUsers')"
+                        :disabled="!isLimited"
+                    />
+                    <v-list-item
+                        to="/leases"
+                        prepend-icon="mdi-timer-outline"
+                        :title="t('menu.manageLeases')"
+                        :disabled="leaseDisabled()"
+                    />
+                    <v-list-item
+                        to="/roles"
+                        prepend-icon="mdi-shield-account-outline"
+                        :title="t('menu.manageRoles')"
+                        :disabled="!isLimited"
+                    />
+                </div>
+                <div class="d-flex flex-column">
+                    <v-list-item
+                        to="/about"
+                        prepend-icon="mdi-information-outline"
+                        :title="t('menu.about')"
+                    />
+                </div>
+            </div>
         </v-list>
     </v-navigation-drawer>
 </template>
