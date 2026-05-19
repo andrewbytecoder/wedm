@@ -25,7 +25,7 @@ function isFolder(n: KeyTreeNode): boolean {
     <div v-for="node in nodes" :key="node.id" class="key-tree-branch">
         <template v-if="isFolder(node)">
             <div
-                class="d-flex align-center py-1 cursor-pointer select-none"
+                class="d-flex align-center py-1 cursor-pointer select-none ga-1 flex-wrap"
                 @click="emit('toggle-expand', node.id)"
             >
                 <v-icon
@@ -33,7 +33,43 @@ function isFolder(n: KeyTreeNode): boolean {
                     size="small"
                     class="me-1"
                 />
+                <v-checkbox
+                    v-if="node.original"
+                    density="compact"
+                    hide-details
+                    class="shrink-0"
+                    :model-value="selectedKeys.includes(node.original.key)"
+                    @update:model-value="emit('toggle-select', node.original.key)"
+                    @click.stop
+                />
                 <span class="text-medium-emphasis">{{ node.name }}</span>
+                <!-- 该路径本身也是一个 key，显示值和操作按钮 -->
+                <template v-if="node.original">
+                    <span class="text-caption text-medium-emphasis ms-2">{{ node.original.value }}</span>
+                    <v-spacer />
+                    <v-btn
+                        icon="mdi-pencil"
+                        size="x-small"
+                        variant="text"
+                        :title="$t('keyManager.actions.edit')"
+                        @click.stop="emit('edit', node.original)"
+                    />
+                    <v-btn
+                        icon="mdi-delete"
+                        size="x-small"
+                        variant="text"
+                        color="error"
+                        :title="$t('keyManager.actions.remove')"
+                        @click.stop="emit('remove', node.original)"
+                    />
+                    <v-btn
+                        icon="mdi-hand-back-right"
+                        size="x-small"
+                        variant="text"
+                        :title="$t('keyManager.actions.touch')"
+                        @click.stop="emit('touch', node.original)"
+                    />
+                </template>
             </div>
             <div v-show="expanded[node.id]" class="ps-5 border-s-sm border-opacity-25">
                 <KeyTreeBranch

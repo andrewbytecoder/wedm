@@ -1,7 +1,3 @@
-import { set as _set, get as _get } from 'lodash-es';
-// @ts-expect-error — list-to-tree is CJS-only and ships without typings
-import ListToTree from 'list-to-tree';
-
 export type KeyRow = { key: string; value: string; tooltip: string };
 
 export type KeyTreeNode = {
@@ -19,68 +15,74 @@ function shortenText(text: string, shallShorten: boolean): string {
     return text;
 }
 
-/** Mirrors legacy `key-manager.vue` `loadTree()` (list-to-tree + lodash path map). */
+/** Build a nested tree from flat key rows using a separator. */
 export function buildKeyTreeFromRows(rows: KeyRow[], separator: string): KeyTreeNode[] {
     if (!separator) {
         return [];
     }
     const tmp: KeyTreeNode[] = [];
-    const keyMap: Record<string, unknown> = {};
+    const pathMap = new Map<string, number>(); // path -> nodeId
     let counter = 1;
 
     for (const item of rows) {
-        const keys = item.key.split(separator);
+        // 过滤空字符串段，防止 key/ 末尾分隔符或连续分隔符产生空节点
+        const keys = item.key.split(separator).filter((s) => s !== '');
+        if (keys.length === 0) continue;
 
         for (let i = 0; i < keys.length; i += 1) {
+            const isLast = i === keys.length - 1;
+            const path = keys.slice(0, i + 1).join(separator);
+
+            // 已存在该路径则复用
+            if (pathMap.has(path)) {
+                continue;
+            }
+
+            const parentPath = keys.slice(0, i).join(separator);
+            const parentId = parentPath ? (pathMap.get(parentPath) ?? 0) : 0;
+
             const object: KeyTreeNode = {
                 id: (counter += 1),
                 name: keys[i],
-                parent: 0,
+                parent: parentId,
                 original: {
                     key: item.key,
-                    value: shortenText(item.value, i === keys.length - 1),
-                    tooltip: keys[i],
+                    value: shortenText(item.value, isLast),
+                    tooltip: isLast ? item.tooltip : keys[i],
                 },
             };
 
-            _set(keyMap, keys.slice(0, i + 1), {
-                nodeId: object.id,
-                ...(_get(keyMap, keys.slice(0, i + 1)) as Record<string, unknown>),
-            });
-
-            const parentId = _get(keyMap, keys.slice(0, i)) as { nodeId?: number } | undefined;
-            object.parent = 0;
-            if (parentId?.nodeId) {
-                object.parent = parentId.nodeId;
-            }
-
-            if (
-                !tmp.find(
-                    (node) => node.name === object.name && node.parent === object.parent,
-                )
-            ) {
-                tmp.push(object);
-            }
+            pathMap.set(path, object.id);
+            tmp.push(object);
         }
 
-        const leaf: KeyTreeNode = {
-            id: (counter += 1),
-            name: shortenText(item.value, true),
-            parent: tmp[tmp.length - 1]!.id,
-            original: {
-                key: item.key,
-                value: shortenText(item.value, true),
-                tooltip: item.tooltip,
-            },
-        };
-        tmp.push(leaf);
+        // leaf: 不需要额外创建节点，最后一个段本身就是 leaf
+        // 但为了兼容现有 UI（leaf 显示值），我们把最后一个段当作 leaf
+        // 如果该路径同时是其他 key 的前缀，它会在后续被当作 folder
     }
 
-    const tree = new ListToTree(tmp, {
-        key_id: 'id',
-        key_parent: 'parent',
-        key_child: 'children',
-        empty_children: false,
-    });
-    return tree.GetTree() as KeyTreeNode[];
+    // Build nested tree manually
+    const nodeMap = new Map<number, KeyTreeNode>();
+    for (const node of tmp) {
+        nodeMap.set(node.id, { ...node });
+    }
+
+    const roots: KeyTreeNode[] = [];
+    for (const node of nodeMap.values()) {
+        if (node.parent === 0) {
+            roots.push(node);
+        } else {
+            const parent = nodeMap.get(node.parent);
+            if (parent) {
+                if (!parent.children) {
+                    parent.children = [];
+                }
+                parent.children.push(node);
+            } else {
+                roots.push(node);
+            }
+        }
+    }
+
+    return roots;
 }
