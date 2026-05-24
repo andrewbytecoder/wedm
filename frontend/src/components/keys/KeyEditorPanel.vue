@@ -52,6 +52,17 @@ function looksLikeJson(value: string): boolean {
     return /"[^"]+"\s*:/.test(t) || (t.startsWith('[') && t.includes('"'));
 }
 
+function hasYamlFeatures(value: string): boolean {
+    if (!value.includes('\n') && !value.includes(':') && !value.startsWith('- ')) return false;
+    // key: value
+    if (/^[a-zA-Z0-9_\-]+\s*:/m.test(value)) return true;
+    // list item
+    if (/^\s*-\s+/m.test(value)) return true;
+    // document start
+    if (/^\s*---/m.test(value)) return true;
+    return false;
+}
+
 function detectValueType(value: string): 'text' | 'json' | 'yaml' {
     const trimmed = value.trim().replace(/^\uFEFF/, '');
     if (!trimmed) return 'text';
@@ -64,15 +75,20 @@ function detectValueType(value: string): 'text' | 'json' | 'yaml' {
         /* not strict JSON */
     }
 
-    // 2) 宽松 JSON：看起来像 JSON 但可能有小瑕疵（缺少值、尾随逗号等）
+    // 2) YAML：基于内容特征（不依赖 parseYaml 成功）
+    if (hasYamlFeatures(trimmed)) {
+        return 'yaml';
+    }
+
+    // 3) 宽松 JSON：看起来像 JSON 但可能有小瑕疵（缺少值、尾随逗号等）
     if (looksLikeJson(trimmed)) {
         return 'json';
     }
 
-    // 3) YAML（排除纯标量如 "hello"）
+    // 4) 单行 YAML（如 "name: value" 无换行）
     try {
         parseYaml(trimmed);
-        if (trimmed.includes('\n') || trimmed.includes(':') || trimmed.startsWith('- ')) {
+        if (trimmed.includes(':')) {
             return 'yaml';
         }
     } catch {
