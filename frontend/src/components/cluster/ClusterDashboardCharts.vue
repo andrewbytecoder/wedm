@@ -44,12 +44,12 @@ const anim = {
 
 const memOption = computed(() => ({
     ...anim,
-    title: { text: t('cluster.dashboard.charts.memoryTitle'), left: 0, textStyle: { fontSize: 13 } },
+    title: { text: t('cluster.dashboard.charts.memoryTitle'), left: 'center', top: 4, textStyle: { fontSize: 13 } },
     tooltip: { trigger: 'axis' },
     legend: { data: ['RSS', 'Heap inuse'], bottom: 0 },
-    grid: { left: 48, right: 16, top: 36, bottom: 56 },
+    grid: { left: 64, right: 16, top: 40, bottom: 56 },
     xAxis: { type: 'category', data: props.timeLabels, boundaryGap: false },
-    yAxis: { type: 'value', name: 'MB' },
+    yAxis: { type: 'value', name: 'MB', nameLocation: 'end', nameGap: 8 },
     series: [
         { name: 'RSS', type: 'line', smooth: true, showSymbol: false, data: props.rssMb },
         { name: 'Heap inuse', type: 'line', smooth: true, showSymbol: false, data: props.heapMb },
@@ -58,12 +58,12 @@ const memOption = computed(() => ({
 
 const keysOption = computed(() => ({
     ...anim,
-    title: { text: t('cluster.dashboard.charts.keysTitle'), left: 0, textStyle: { fontSize: 13 } },
+    title: { text: t('cluster.dashboard.charts.keysTitle'), left: 'center', top: 4, textStyle: { fontSize: 13 } },
     tooltip: { trigger: 'axis' },
     legend: { data: ['/metrics mvcc keys', t('cluster.dashboard.charts.visibleKeysSeries')], bottom: 0 },
-    grid: { left: 48, right: 16, top: 36, bottom: 56 },
+    grid: { left: 64, right: 16, top: 40, bottom: 56 },
     xAxis: { type: 'category', data: props.timeLabels, boundaryGap: false },
-    yAxis: { type: 'value' },
+    yAxis: { type: 'value', nameLocation: 'end', nameGap: 8 },
     series: [
         { name: '/metrics mvcc keys', type: 'line', smooth: true, showSymbol: false, data: props.mvccKeys },
         {
@@ -78,15 +78,15 @@ const keysOption = computed(() => ({
 
 const leaseOption = computed(() => ({
     ...anim,
-    title: { text: t('cluster.dashboard.charts.leaseTitle'), left: 0, textStyle: { fontSize: 13 } },
+    title: { text: t('cluster.dashboard.charts.leaseTitle'), left: 'center', top: 4, textStyle: { fontSize: 13 } },
     tooltip: { trigger: 'axis' },
-    grid: { left: 48, right: 16, top: 36, bottom: 32 },
+    grid: { left: 64, right: 16, top: 40, bottom: 32 },
     xAxis: {
         type: 'category',
         data: props.leaseBuckets.map((b) => b.name),
         axisLabel: { interval: 0, rotate: 24 },
     },
-    yAxis: { type: 'value', name: t('cluster.dashboard.charts.leaseAxis') },
+    yAxis: { type: 'value', name: t('cluster.dashboard.charts.leaseAxis'), nameLocation: 'end', nameGap: 8 },
     series: [{ type: 'bar', data: props.leaseBuckets.map((b) => b.value), itemStyle: { color: '#5c6bc0' } }],
 }));
 </script>
