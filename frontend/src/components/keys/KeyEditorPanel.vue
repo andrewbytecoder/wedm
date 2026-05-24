@@ -267,7 +267,7 @@ defineExpose({ submit });
 <template>
     <v-card v-show="open" variant="outlined" class="key-editor-panel">
         <v-card-title class="text-subtitle-1">{{ heading }}</v-card-title>
-        <v-card-text>
+        <v-card-text style="overflow-y: auto; max-height: calc(100vh - 140px);">
             <v-form v-model="formValid" @submit.prevent="submit">
                 <v-text-field
                     v-model="keyField"

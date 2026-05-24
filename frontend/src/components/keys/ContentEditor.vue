@@ -48,6 +48,7 @@ const editorRef = ref(null)
 let editorNode = null
 const scrollOffset = { top: 0, left: 0 }
 let isUpdatingFromExternal = false // 标记是否从外部更新
+let wheelHandler = null
 
 const readonlyValue = computed(() => {
     return props.readonly || props.loading
@@ -63,8 +64,58 @@ const updateScroll = () => {
     }
 }
 
+function findScrollableAncestor(el) {
+    let parent = el?.parentElement
+    while (parent && parent !== document.body) {
+        const style = window.getComputedStyle(parent)
+        if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+            return parent
+        }
+        parent = parent.parentElement
+    }
+    return null
+}
+
+function setupWheelForwarding() {
+    if (!editorNode || !editorRef.value) return
+    const container = editorRef.value
+
+    wheelHandler = (e) => {
+        if (!editorNode) return
+        const scrollTop = editorNode.getScrollTop()
+        const scrollHeight = editorNode.getScrollHeight()
+        const height = editorNode.getLayoutInfo().height
+
+        const hasScroll = scrollHeight > height + 2
+        const canScrollDown = scrollTop + height < scrollHeight - 2
+        const canScrollUp = scrollTop > 2
+
+        if (hasScroll) {
+            if (e.deltaY > 0 && canScrollDown) return
+            if (e.deltaY < 0 && canScrollUp) return
+        }
+
+        const ancestor = findScrollableAncestor(container)
+        if (ancestor) {
+            e.stopPropagation()
+            e.preventDefault()
+            ancestor.scrollBy({ top: e.deltaY, behavior: 'auto' })
+        } else {
+            e.stopPropagation()
+            e.preventDefault()
+            window.scrollBy({ top: e.deltaY, behavior: 'auto' })
+        }
+    }
+
+    container.addEventListener('wheel', wheelHandler, { passive: false, capture: true })
+}
+
 const destroyEditor = () => {
     if (editorNode != null && editorNode.dispose != null) {
+        if (wheelHandler && editorRef.value) {
+            editorRef.value.removeEventListener('wheel', wheelHandler, { capture: true })
+            wheelHandler = null
+        }
         const model = editorNode.getModel()
         if (model != null) {
             model.dispose()
@@ -168,6 +219,8 @@ onMounted(async () => {
                 emit('input', value)
             })
         }
+
+        setupWheelForwarding()
     }
 })
 
