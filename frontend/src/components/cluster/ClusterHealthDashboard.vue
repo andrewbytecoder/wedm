@@ -31,7 +31,7 @@ const rpcKeySeries = ref<(number | null)[]>([]);
 
 const events = ref<KvStreamEvent[]>([]);
 const maxEvents = 80;
-const maxPoints = 48;
+const maxPoints = 360; // 5s interval => 30min retention
 
 let pollTimer: number | undefined;
 let offKv: (() => void) | undefined;
