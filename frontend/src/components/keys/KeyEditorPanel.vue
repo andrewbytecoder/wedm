@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import YAML from 'yaml';
 import { EventsOn } from '../../../wailsjs/runtime';
 import {
     etcdPutKeyTx,
@@ -60,7 +61,7 @@ watch(
         }
         keyField.value = props.initialKey;
         valueField.value = props.initialValue;
-        
+
         // Auto-detect value type from initial value
         if (value && value.trim()) {
             if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
@@ -78,7 +79,7 @@ watch(
         } else {
             valueType.value = 'text';
         }
-        
+
         ttlField.value = 0;
         if (mode === 'edit' && key) {
             nextRid = 1;
@@ -115,29 +116,6 @@ watch(
 const requiredRule = (v: unknown) =>
     (typeof v === 'string' && v.trim().length > 0) || t('common.validation.required');
 
-const validateJson = (v: string): boolean => {
-    if (v.trim() === '') return true;
-    try {
-        JSON.parse(v);
-        validationError.value = '';
-        return true;
-    } catch (e) {
-        // 提供详细的错误提示
-        const errorMsg = e instanceof Error ? e.message : '';
-        if (errorMsg.includes('Unexpected token')) {
-            validationError.value = t('keyEditor.messages.invalidJsonDetail', { 
-                detail: '键名和字符串值必须使用双引号，例如: {"key": "value"}' 
-            });
-        } else if (errorMsg.includes('Unexpected end')) {
-            validationError.value = t('keyEditor.messages.invalidJsonDetail', { 
-                detail: 'JSON 格式不完整，请检查括号是否匹配' 
-            });
-        } else {
-            validationError.value = t('keyEditor.messages.invalidJsonDetail', { detail: errorMsg });
-        }
-        return false;
-    }
-};
 
 const validateYaml = (v: string): boolean => {
     if (v.trim() === '') return true;
@@ -161,35 +139,6 @@ const validateYaml = (v: string): boolean => {
     }
 };
 
-const valueRules = computed(() => {
-    const rules: Array<(v: string) => boolean | string> = [requiredRule];
-    
-    if (valueType.value === 'json') {
-        // JSON 类型验证 - 返回 true 或错误消息字符串
-        rules.push((v: string) => {
-            if (v.trim() === '') return true;
-            try {
-                JSON.parse(v);
-                validationError.value = '';
-                return true;
-            } catch (e) {
-                const errorMsg = e instanceof Error ? e.message : '';
-                if (errorMsg.includes('Unexpected token')) {
-                    validationError.value = '键名和字符串值必须使用双引号，例如: {"key": "value"}';
-                } else if (errorMsg.includes('Unexpected end')) {
-                    validationError.value = 'JSON 格式不完整，请检查括号是否匹配';
-                } else {
-                    validationError.value = errorMsg;
-                }
-                return validationError.value;
-            }
-        });
-    } else if (valueType.value === 'yaml') {
-        rules.push((v: string) => validateYaml(v) || validationError.value);
-    }
-    
-    return rules;
-});
 
 // Monaco Editor 语言映射
 const monacoLanguage = computed(() => {
@@ -238,16 +187,6 @@ async function copyValue() {
     }
 }
 
-function formatValue(value: string): string {
-    if (valueType.value === 'json') {
-        try {
-            return JSON.stringify(JSON.parse(value), null, 2);
-        } catch {
-            return value;
-        }
-    }
-    return value;
-}
 
 function revertToRevision(_e: unknown, ctx: { item: RevRow }) {
     valueField.value = ctx.item.previousValue;
@@ -330,7 +269,7 @@ defineExpose({ submit });
                     ]"
                     class="mb-2"
                 />
-                
+
                 <!-- Monaco Editor -->
                 <div class="mb-2">
                     <div class="editor-header">
