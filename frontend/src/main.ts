@@ -7,6 +7,22 @@ import { i18n } from './i18n';
 import { useSettingsStore } from './stores/settings';
 import './assets/styles.css';
 
+// Configure Monaco Editor Web Workers
+(window as unknown as Record<string, unknown>).MonacoEnvironment = {
+    getWorker(_workerId: string, label: string) {
+        if (label === 'json') {
+            return new Worker(
+                new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
+                { type: 'module' },
+            );
+        }
+        return new Worker(
+            new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url),
+            { type: 'module' },
+        );
+    },
+};
+
 const app = createApp(App);
 const pinia = createPinia();
 

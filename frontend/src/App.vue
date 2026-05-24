@@ -48,7 +48,7 @@ const getCurrentThemeTooltip = () => {
 const toggleTheme = () => {
     currentThemeIndex.value = (currentThemeIndex.value + 1) % themeList.length
     const nextTheme = themeList[currentThemeIndex.value]
-    theme.global.name.value = nextTheme
+    theme.change(nextTheme)
 
     // 保存主题选择到 localStorage
     localStorage.setItem('selected-theme', nextTheme)
@@ -180,7 +180,7 @@ onMounted(async () => {
     const savedTheme = localStorage.getItem('selected-theme')
     if (savedTheme && themeList.includes(savedTheme)) {
         currentThemeIndex.value = themeList.indexOf(savedTheme)
-        theme.global.name.value = savedTheme
+        theme.change(savedTheme)
 
         // 应用对应的 CSS 类
         if (savedTheme === 'vscode-dark') {
@@ -190,7 +190,7 @@ onMounted(async () => {
         }
     } else {
         // 默认使用 vscode-dark
-        theme.global.name.value = 'vscode-dark'
+        theme.change('vscode-dark')
         document.body.classList.add('vscode-dark-theme')
     }
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import YAML from 'yaml';
+import { parse as parseYaml } from 'yaml';
 import { EventsOn } from '../../../wailsjs/runtime';
 import {
     etcdPutKeyTx,
@@ -46,6 +46,42 @@ let offRev: (() => void) | undefined;
 const watchedKey = ref('');
 let nextRid = 1;
 
+function looksLikeJson(value: string): boolean {
+    const t = value.trim();
+    if (!t.startsWith('{') && !t.startsWith('[')) return false;
+    return /"[^"]+"\s*:/.test(t) || (t.startsWith('[') && t.includes('"'));
+}
+
+function detectValueType(value: string): 'text' | 'json' | 'yaml' {
+    const trimmed = value.trim().replace(/^\uFEFF/, '');
+    if (!trimmed) return 'text';
+
+    // 1) 严格 JSON
+    try {
+        JSON.parse(trimmed);
+        return 'json';
+    } catch {
+        /* not strict JSON */
+    }
+
+    // 2) 宽松 JSON：看起来像 JSON 但可能有小瑕疵（缺少值、尾随逗号等）
+    if (looksLikeJson(trimmed)) {
+        return 'json';
+    }
+
+    // 3) YAML（排除纯标量如 "hello"）
+    try {
+        parseYaml(trimmed);
+        if (trimmed.includes('\n') || trimmed.includes(':') || trimmed.startsWith('- ')) {
+            return 'yaml';
+        }
+    } catch {
+        /* not YAML */
+    }
+
+    return 'text';
+}
+
 watch(
     () => [props.open, props.mode, props.initialKey, props.initialValue] as const,
     ([open, mode, key, value]) => {
@@ -59,26 +95,9 @@ watch(
         if (!open) {
             return;
         }
-        keyField.value = props.initialKey;
-        valueField.value = props.initialValue;
-
-        // Auto-detect value type from initial value
-        if (value && value.trim()) {
-            if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
-                try {
-                    JSON.parse(value);
-                    valueType.value = 'json';
-                } catch {
-                    valueType.value = 'text';
-                }
-            } else if (value.includes(':') && !value.includes('{')) {
-                valueType.value = 'yaml';
-            } else {
-                valueType.value = 'text';
-            }
-        } else {
-            valueType.value = 'text';
-        }
+        keyField.value = key;
+        valueField.value = value;
+        valueType.value = detectValueType(value);
 
         ttlField.value = 0;
         if (mode === 'edit' && key) {
@@ -113,32 +132,17 @@ watch(
     { immediate: true },
 );
 
+// Auto-detect when user pastes/inputs content from empty
+watch(
+    () => valueField.value,
+    (val, oldVal) => {
+        if (!val.trim() || oldVal?.trim()) return;
+        valueType.value = detectValueType(val);
+    },
+);
+
 const requiredRule = (v: unknown) =>
     (typeof v === 'string' && v.trim().length > 0) || t('common.validation.required');
-
-
-const validateYaml = (v: string): boolean => {
-    if (v.trim() === '') return true;
-    try {
-        // Simple YAML validation - check for basic syntax issues
-        const lines = v.split('\n');
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (trimmed === '' || trimmed.startsWith('#')) continue;
-            // Check indentation consistency (basic check)
-            if (line.match(/^\s*$/) === null && line.match(/^ +/) && line.match(/^ +/)[0].length % 2 !== 0) {
-                validationError.value = t('keyEditor.messages.invalidYaml');
-                return false;
-            }
-        }
-        validationError.value = '';
-        return true;
-    } catch {
-        validationError.value = t('keyEditor.messages.invalidYaml');
-        return false;
-    }
-};
-
 
 // Monaco Editor 语言映射
 const monacoLanguage = computed(() => {
