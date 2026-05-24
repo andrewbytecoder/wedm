@@ -7,19 +7,16 @@ import { i18n } from './i18n';
 import { useSettingsStore } from './stores/settings';
 import './assets/styles.css';
 
-// Configure Monaco Editor Web Workers
+// Vite ?worker imports for Monaco Editor
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
+
 (window as unknown as Record<string, unknown>).MonacoEnvironment = {
     getWorker(_workerId: string, label: string) {
         if (label === 'json') {
-            return new Worker(
-                new URL('monaco-editor/esm/vs/language/json/json.worker', import.meta.url),
-                { type: 'module' },
-            );
+            return new JsonWorker();
         }
-        return new Worker(
-            new URL('monaco-editor/esm/vs/editor/editor.worker', import.meta.url),
-            { type: 'module' },
-        );
+        return new EditorWorker();
     },
 };
 
