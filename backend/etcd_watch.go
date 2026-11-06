@@ -6,7 +6,6 @@ import (
 	"errors"
 	"log"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -58,7 +57,7 @@ func (a *App) runKVWatch(ctx context.Context, configJSON string) {
 					"isCanceled": wresp.Canceled,
 				}
 				b, _ := json.Marshal(payload)
-				runtime.EventsEmit(a.ctx, "etcd:kv", string(b))
+				a.app.Event.Emit("etcd:kv", string(b))
 			}
 		}
 	}
@@ -107,7 +106,7 @@ func (a *App) runKeyRevisionWatch(ctx context.Context, configJSON, key string) {
 						"error": wresp.Err().Error(),
 						"key":   key,
 					})
-					runtime.EventsEmit(a.ctx, "etcd:keyrev", string(b))
+					a.app.Event.Emit("etcd:keyrev", string(b))
 				}
 				return
 			}
@@ -122,7 +121,7 @@ func (a *App) runKeyRevisionWatch(ctx context.Context, configJSON, key string) {
 					"type":           ev.Type.String(),
 				}
 				b, _ := json.Marshal(payload)
-				runtime.EventsEmit(a.ctx, "etcd:keyrev", string(b))
+				a.app.Event.Emit("etcd:keyrev", string(b))
 			}
 		}
 	}

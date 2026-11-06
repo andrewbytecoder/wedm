@@ -2,8 +2,10 @@
   "name": "wails etcd desktop manager",
   "version": "1.0.0.0",
   "private": true,
-  "description": "ETCD Manager — Wails v2 + Vue 3 + TypeScript.",
+  "description": "ETCD Manager — Wails v3 + Vue 3 + TypeScript.",
   "scripts": {
+    "dev": "wails3 dev",
+    "build": "wails3 build",
     "frontend:install": "cd frontend && npm install",
     "frontend:dev": "cd frontend && npm run dev",
     "frontend:build": "cd frontend && npm run build",

@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 //go:embed app_embed/*
@@ -16,7 +16,7 @@ var embedded embed.FS
 
 // App exposes desktop integration to the Vue frontend (replaces Electron ipcMain).
 type App struct {
-	ctx context.Context
+	app *application.App
 
 	watchMu        sync.Mutex
 	kvWatchCancel  context.CancelFunc
@@ -26,20 +26,18 @@ type App struct {
 	userWatchCancels map[string]context.CancelFunc // guarded by userWatchMu
 }
 
-func NewApp() *App {
+func NewApp(app *application.App) *App {
 	return &App{
+		app:              app,
 		userWatchCancels: make(map[string]context.CancelFunc),
 	}
 }
 
-func (a *App) Startup(ctx context.Context) {
-	a.ctx = ctx
-}
-
-func (a *App) Shutdown(context.Context) {
+func (a *App) ServiceShutdown() error {
 	a.EtcdStopAllUserWatches()
 	a.stopKVWatchLocked()
 	a.stopKeyRevWatchLocked()
+	return nil
 }
 
 func (a *App) stopKVWatchLocked() {
@@ -99,12 +97,13 @@ func (a *App) WriteTextFile(path string, content string) error {
 
 // OpenImportConfigPath opens a file picker for JSON settings import.
 func (a *App) OpenImportConfigPath() (string, error) {
-	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "Import settings",
-		Filters: []runtime.FileFilter{
+	return a.app.Dialog.OpenFileWithOptions(&application.OpenFileDialogOptions{
+		Title:          "Import settings",
+		CanChooseFiles: true,
+		Filters: []application.FileFilter{
 			{DisplayName: "JSON", Pattern: "*.json;*.JSON"},
 		},
-	})
+	}).PromptForSingleSelection()
 }
 
 // OpenExportConfigPath opens a save dialog for JSON settings export.
@@ -113,28 +112,29 @@ func (a *App) OpenExportConfigPath(defaultName string) (string, error) {
 	if name == "" {
 		name = "etcd-manager-settings.json"
 	}
-	return runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
-		Title:           "Export settings",
-		DefaultFilename: name,
-		Filters: []runtime.FileFilter{
+	return a.app.Dialog.SaveFileWithOptions(&application.SaveFileDialogOptions{
+		Title:    "Export settings",
+		Filename: name,
+		Filters: []application.FileFilter{
 			{DisplayName: "JSON", Pattern: "*.json"},
 		},
-	})
+	}).PromptForSingleSelection()
 }
 
 // OpenSSLFilePath opens a file picker for TLS material (cert/key/chain).
 func (a *App) OpenSSLFilePath() (string, error) {
-	return runtime.OpenFileDialog(a.ctx, runtime.OpenDialogOptions{
-		Title: "Select certificate file",
-		Filters: []runtime.FileFilter{
+	return a.app.Dialog.OpenFileWithOptions(&application.OpenFileDialogOptions{
+		Title:          "Select certificate file",
+		CanChooseFiles: true,
+		Filters: []application.FileFilter{
 			{DisplayName: "Certificates and keys", Pattern: "*.pem;*.crt;*.key;*.cer;*.*"},
 		},
-	})
+	}).PromptForSingleSelection()
 }
 
 // OpenExternalURL opens a URL in the system browser.
-func (a *App) OpenExternalURL(url string) {
-	runtime.BrowserOpenURL(a.ctx, url)
+func (a *App) OpenExternalURL(url string) error {
+	return a.app.Browser.OpenURL(url)
 }
 
 type appMeta struct {

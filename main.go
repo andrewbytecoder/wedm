@@ -2,43 +2,42 @@ package main
 
 import (
 	"embed"
+	"log"
 
 	"github.com/andrewbytecoder/wedm/backend"
-	"github.com/wailsapp/wails/v2"
-	"github.com/wailsapp/wails/v2/pkg/options"
-	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-	"github.com/wailsapp/wails/v2/pkg/options/windows"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
 
 func main() {
-	app := backend.NewApp()
+	app := application.New(application.Options{
+		Name:        "wedm",
+		Description: "ETCD desktop manager",
+		Assets: application.AssetOptions{
+			Handler: application.AssetFileServerFS(assets),
+		},
+		Mac: application.MacOptions{
+			ApplicationShouldTerminateAfterLastWindowClosed: true,
+		},
+	})
+	app.RegisterService(application.NewService(backend.NewApp(app)))
 
-	err := wails.Run(&options.App{
+	app.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title:            "wedm",
 		Width:            1200,
 		Height:           800,
 		MinWidth:         800,
 		MinHeight:        600,
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		AssetServer: &assetserver.Options{
-			Assets: assets,
-		},
-		OnStartup:  app.Startup,
-		OnShutdown: app.Shutdown,
-		Bind: []interface{}{
-			app,
-		},
-		Windows: &windows.Options{
-			WebviewIsTransparent: false,
-			WindowIsTranslucent:  false,
-			DisableWindowIcon:    false,
+		BackgroundColour: application.NewRGBA(27, 38, 54, 255),
+		URL:              "/",
+		Windows: application.WindowsWindow{
+			DisableIcon: false,
 		},
 	})
 
-	if err != nil {
-		println("Error:", err.Error())
+	if err := app.Run(); err != nil {
+		log.Fatal(err)
 	}
 }

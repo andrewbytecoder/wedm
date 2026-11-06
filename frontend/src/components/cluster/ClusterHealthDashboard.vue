@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { EventsOn } from '../../../wailsjs/runtime';
+import { EventsOn } from '@/services/wailsEvents';
 import {
     etcdClusterDashboard,
     etcdStartKVWatch,

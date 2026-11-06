@@ -14,15 +14,15 @@ if (Test-Path "frontend\node_modules\.vite") {
 }
 
 # 删除后端构建产物
-if (Test-Path "build\bin") {
-    Remove-Item -Recurse -Force "build\bin"
-    Write-Host "✓ 已删除 build\bin" -ForegroundColor Green
+if (Test-Path "bin") {
+    Remove-Item -Recurse -Force "bin"
+    Write-Host "✓ 已删除 bin" -ForegroundColor Green
 }
 
-# 删除 wailsjs 生成文件（会在下次构建时重新生成）
-if (Test-Path "frontend\wailsjs") {
-    Remove-Item -Recurse -Force "frontend\wailsjs"
-    Write-Host "✓ 已删除 frontend\wailsjs" -ForegroundColor Green
+# 删除 Wails v3 绑定（会在下次构建时重新生成）
+if (Test-Path "frontend\bindings") {
+    Remove-Item -Recurse -Force "frontend\bindings"
+    Write-Host "✓ 已删除 frontend\bindings" -ForegroundColor Green
 }
 
-Write-Host "`n清理完成！现在可以运行 'wails dev' 或 'wails build'" -ForegroundColor Green
+Write-Host "`n清理完成！现在可以运行 'wails3 dev' 或 'wails3 build'" -ForegroundColor Green

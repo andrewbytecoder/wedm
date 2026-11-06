@@ -27,7 +27,9 @@ yarn-error.log*
 default.etcd
 
 # Wails
-/build
+/bin
 /build/bin
 frontend/node_modules
 etcd-manager.exe
+.task
+.wails

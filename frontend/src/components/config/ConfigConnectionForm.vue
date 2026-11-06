@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useSettingsStore } from '@/stores/settings';
 import { useAppStore } from '@/stores/app';
 import { desktop } from '@/services/desktop';
-import * as WailsApp from '../../../wailsjs/go/backend/App';
+import * as WailsApp from '../../../bindings/github.com/andrewbytecoder/wedm/backend/app';
 
 const { t } = useI18n();
 const settings = useSettingsStore();

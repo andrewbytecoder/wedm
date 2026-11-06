@@ -4,7 +4,7 @@
 
 ![Alt text](/screenshots/etcd-manager.gif?raw=true "ETCD manager")
 
-**WEDM** is a free, cross-platform [ETCD](http://www.etcd.io) v3 client and GUI built with **Wails v2**, **Go**, and **Vue 3**. 
+**WEDM** is a free, cross-platform [ETCD](http://www.etcd.io) v3 client and GUI built with **Wails v3**, **Go**, and **Vue 3**.
 
 The goal of the project is to provide an efficient, modern desktop application for Windows, Linux, and macOS that covers all ETCD functionality. Anything you can do with `etcdctl`, you should be able to do with this tool as well.
 
@@ -26,8 +26,8 @@ The goal of the project is to provide an efficient, modern desktop application f
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Go 1.22+
-- **Frontend Framework**: Wails v2
+- **Backend**: Go 1.26+
+- **Frontend Framework**: Wails v3
 - **UI Library**: Vue 3 + TypeScript + Vuetify 3
 - **Build Tool**: Vite
 
@@ -45,12 +45,12 @@ Please check the [Releases](https://github.com/andrewbytecoder/wedm/releases) pa
 To run the project locally, you need to set up the Wails development environment.
 
 #### Prerequisites
-1. **Go**: Version 1.22 or higher ([Download Go](https://go.dev/dl/)).
+1. **Go**: Version 1.26 or higher ([Download Go](https://go.dev/dl/)).
 2. **Node.js**: LTS version recommended ([Download Node](https://nodejs.org/)).
 3. **Wails CLI**: Install via Go:
    
 ```
-go install github.com/wailsapp/wails/v2/cmd/wails@latest
+go install github.com/wailsapp/wails/v3/cmd/wails3@v3.1.0
 ```
 
 #### Running the Dev Build
@@ -72,7 +72,7 @@ npm install
 3. **Start the Development Server**:
 
 ```
-wails dev
+wails3 dev
 ```
 
 This will launch the application with hot-reloading for the frontend.

@@ -4,7 +4,7 @@
 
 ![Alt text](/screenshots/etcd-manager.gif?raw=true "ETCD manager")
 
-**WEDM** 是一个免费、跨平台的 [ETCD](http://www.etcd.io) v3 客户端和图形界面工具，基于 **Wails v2**、**Go** 和 **Vue 3** 构建。
+**WEDM** 是一个免费、跨平台的 [ETCD](http://www.etcd.io) v3 客户端和图形界面工具，基于 **Wails v3**、**Go** 和 **Vue 3** 构建。
 
 本项目的目标是为 Windows、Linux 和 macOS 提供一个高效、现代化的桌面应用程序，覆盖 ETCD 的所有功能。凡是你能够使用 `etcdctl` 完成的操作，都应该能够通过本工具轻松实现。
 
@@ -26,8 +26,8 @@
 
 ## 🛠️ 技术栈
 
-- **后端**: Go 1.22+
-- **前端框架**: Wails v2
+- **后端**: Go 1.26+
+- **前端框架**: Wails v3
 - **UI 库**: Vue 3 + TypeScript + Vuetify 3
 - **构建工具**: Vite
 
@@ -45,12 +45,12 @@
 若要在本地运行本项目，你需要配置 Wails 开发环境。
 
 #### 前置条件
-1. **Go**: 版本 1.22 或更高 ([下载 Go](https://go.dev/dl/))。
+1. **Go**: 版本 1.26 或更高 ([下载 Go](https://go.dev/dl/))。
 2. **Node.js**: 推荐使用 LTS 版本 ([下载 Node](https://nodejs.org/))。
 3. **Wails CLI**: 通过 Go 安装：
    
 ```bash
-go install github.com/wailsapp/wails/v2/cmd/wails@latest
+go install github.com/wailsapp/wails/v3/cmd/wails3@v3.1.0
 ```
 4. **系统依赖**: 请参考 [Wails 前置条件指南](https://wails.io/docs/gettingstarted/prerequisites) 安装你操作系统所需的依赖项。
 
@@ -67,16 +67,16 @@ npm run frontend:install
 ```   
 3. **启动开发模式**:
 ```bash 
-wails dev
+wails3 dev
 ```
 
 该命令会同时启动 Go 后端和带有热重载功能的 Vite 前端。
 
 4. **生产环境构建**:
 ```bash
-wails build  
+wails3 build
 ```
-编译后的可执行文件将位于 `build/bin` 目录下。
+编译后的可执行文件将位于 `bin` 目录下。
 
 ## 📖 使用说明
 

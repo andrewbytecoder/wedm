@@ -8,7 +8,7 @@ import { rehydrateActivatedWatchers } from '@/services/watcherRuntime';
 import { useAppStore } from '@/stores/app';
 import { useSettingsStore } from '@/stores/settings';
 import { applyFontSettings } from '@/i18n/font'
-import { EventsOn } from '../wailsjs/runtime';
+import { EventsOn } from '@/services/wailsEvents';
 import { useTheme } from 'vuetify'
 
 const theme = useTheme()

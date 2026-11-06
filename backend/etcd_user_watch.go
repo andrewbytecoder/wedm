@@ -7,7 +7,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -22,7 +21,7 @@ type userWatchSpec struct {
 
 func (a *App) emitWatcherEvent(payload map[string]interface{}) {
 	b, _ := json.Marshal(payload)
-	runtime.EventsEmit(a.ctx, "watcher:event", string(b))
+	a.app.Event.Emit("watcher:event", string(b))
 }
 
 // EtcdStartUserWatch starts a background etcd watch. specJSON:

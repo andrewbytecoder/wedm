@@ -2,7 +2,7 @@
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { parse as parseYaml } from 'yaml';
-import { EventsOn } from '../../../wailsjs/runtime';
+import { EventsOn } from '@/services/wailsEvents';
 import {
     etcdPutKeyTx,
     etcdStartKeyRevisionWatch,
@@ -307,8 +307,8 @@ defineExpose({ submit });
                         :language="monacoLanguage"
                         :readonly="false"
                         :border="true"
-                        @input="(val) => { valueField = val; validationError = ''; }"
-                        @reset="(val) => { valueField = val; }"
+                        @input="(val: string) => { valueField = val; validationError = ''; }"
+                        @reset="(val: string) => { valueField = val; }"
                         @save="submit"
                         class="content-editor"
                     />
