@@ -93,6 +93,7 @@ function cancelStatusDialog() {
     statusDialog.value = false;
 }
 
+
 useHotkey('ctrl+h', (e) => {
     e.preventDefault();
     showHelp.value = !showHelp.value;
